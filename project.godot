@@ -34,6 +34,7 @@ VisualEffectsManager="*res://Scenes/VisualEffectsManager.tscn"
 VisualEnhancements="*res://Scenes/VisualEnhancementsManager.tscn"
 InputInitializer="*res://Scripts/input_initializer.gd"
 TimeEffectsManager="*res://Scenes/TimeEffectsManager.tscn"
+WhiteScreenFix="*res://Scripts/bypass_white_screen.gd"
 
 [dialogic]
 
@@ -75,8 +76,7 @@ layout/style_directory={
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1080
+window/size/mode=3
 window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"

@@ -7,6 +7,7 @@
 ├── LICENSE
 ├── Markdown
 │   ├── brainstorm.md
+│   ├── tasks.md
 │   └── update.md
 ├── README.md
 ├── Resources
@@ -43,6 +44,7 @@
 │   ├── DynamicLightingDemo.tscn
 │   ├── EnhancedCamera.tscn
 │   ├── EnvironmentalEffectsDemo.tscn
+│   ├── HeatBarTest.tscn
 │   ├── House.tscn
 │   ├── MainMenu.tscn
 │   ├── MethhLab.tscn
@@ -58,6 +60,7 @@
 │   │   ├── GlassShatter.tscn
 │   │   ├── MuzzleFlash.tscn
 │   │   └── SmokePuff.tscn
+│   │
 │   ├── PatchedDoors.tscn
 │   ├── PoliceResponse.tscn
 │   ├── PoliceUnitBase.tscn
@@ -68,6 +71,7 @@
 │   ├── TensionEncounter.tscn
 │   ├── TensionSound.tscn
 │   ├── TerritoryArea.tscn
+│   ├── TestScene.tscn
 │   ├── TimeEffectsManager.tscn
 │   ├── UnifiedPostProcess.tscn
 │   ├── VisualEffectsManager.tscn
@@ -80,6 +84,7 @@
 │   ├── ride_with_hank.tscn
 │   ├── skyler.tscn
 │   └── walt_jr.tscn
+│
 ├── Scripts
 │   ├── MainMenu.gd
 │   ├── MainMenu.gd.uid
@@ -93,6 +98,8 @@
 │   ├── adaptive_resolution_manager.gd.uid
 │   ├── business_management_system.gd
 │   ├── business_management_system.gd.uid
+│   ├── bypass_white_screen.gd
+│   ├── bypass_white_screen.gd.uid
 │   ├── camera_effects_autoload.gd
 │   ├── camera_effects_autoload.gd.uid
 │   ├── camera_shake.gd
@@ -137,10 +144,10 @@
 │   ├── environmental_interaction_system.gd.uid
 │   ├── environmental_particles.gd
 │   ├── environmental_particles.gd.uid
-│   ├── find_target.gd
-│   ├── find_target.gd.uid
 │   ├── grid_visualizer.gd
 │   ├── grid_visualizer.gd.uid
+│   ├── heat_bar.gd
+│   ├── heat_bar.gd.uid
 │   ├── house.gd
 │   ├── house.gd.uid
 │   ├── id_manager.gd
@@ -161,15 +168,12 @@
 │   ├── material_reflections.gd.uid
 │   ├── meth_lab_button.gd
 │   ├── meth_lab_button.gd.uid
-│   ├── move_to_position.gd
-│   ├── move_to_position.gd.uid
 │   ├── notification.gd
 │   ├── notification.gd.uid
 │   ├── notification_manager.gd
 │   ├── notification_manager.gd.uid
 │   ├── npc_reaction.gd
 │   ├── npc_reaction.gd.uid
-│   ├── parallax_background_manager.gd
 │   ├── parallax_background_manager.gd.uid
 │   ├── parkour_system.gd
 │   ├── parkour_system.gd.uid
@@ -227,6 +231,8 @@
 │   ├── tension_trigger.gd.uid
 │   ├── territory_area.gd
 │   ├── territory_area.gd.uid
+│   ├── test_script.gd
+│   ├── test_script.gd.uid
 │   ├── texture_variation_system.gd
 │   ├── texture_variation_system.gd.uid
 │   ├── time_effects_manager.gd
@@ -239,20 +245,30 @@
 │   ├── visual_atmosphere_manager.gd.uid
 │   ├── visual_effects_manager.gd
 │   ├── visual_effects_manager.gd.uid
+│   ├── wanted_icon.gd
+│   ├── wanted_icon.gd.uid
 │   ├── weapon_handling_system.gd
 │   ├── weapon_handling_system.gd.uid
 │   ├── weather_impact_system.gd
 │   └── weather_impact_system.gd.uid
+│
 ├── UI
 │   └── Scenes
-│       └── StaminaBar
-│           └── stamina_bar.tscn
+│       ├── HeatBar
+│       │   └── heat_bar.tscn
+│       ├── StaminaBar
+│       │   └── stamina_bar.tscn
+│       └── hud.tscn
+│
 ├── ai
-│   └── tasks
-│       ├── find_target.gd
-│       ├── find_target.gd.uid
-│       ├── move_to_position.gd
-│       └── move_to_position.gd.uid
+│   ├── tasks
+│   │   ├── find_target.gd
+│   │   ├── find_target.gd.uid
+│   │   ├── move_to_position.gd
+│   │   └── move_to_position.gd.uid
+│   │
+│   └── trees
+│
 ├── assets
 │   ├── Cars
 │   │   ├── car_front.png
@@ -261,6 +277,7 @@
 │   │   ├── car_right.png.import
 │   │   ├── city_cars.png
 │   │   └── city_cars.png.import
+│   │
 │   ├── Characters
 │   │   ├── Jesse
 │   │   │   ├── Master File.aseprite
@@ -280,9 +297,11 @@
 │   │   │   ├── walk.aseprite
 │   │   │   ├── walk.png
 │   │   │   └── walk.png.import
+│   │   │
 │   │   ├── Low-Poly-Characters
 │   │   │   ├── Characters_V3_Colour.png
 │   │   │   └── Characters_V3_Colour.png.import
+│   │   │
 │   │   └── Portraits
 │   │       ├── Doctor.png
 │   │       ├── Doctor.png.import
@@ -294,10 +313,12 @@
 │   │       ├── Skyler.png.import
 │   │       ├── Walter.png
 │   │       └── Walter.png.import
+│   │
 │   ├── Extra
 │   │   ├── Shadow.png
 │   │   ├── Shadow.png.import
 │   │   └── Sounds
+│   │
 │   ├── Fonts
 │   │   ├── Arial.ttf
 │   │   ├── Arial.ttf.import
@@ -322,6 +343,7 @@
 │   │       ├── Oswald-Regular.ttf.import
 │   │       ├── Oswald-SemiBold.ttf
 │   │       └── Oswald-SemiBold.ttf.import
+│   │
 │   ├── Prototype_Character
 │   │   ├── Prototype_Character.aseprite
 │   │   ├── Prototype_Character.png
@@ -330,6 +352,11 @@
 │   │   ├── Prototype_Character_Blue.png.import
 │   │   ├── Prototype_Character_Red.png
 │   │   └── Prototype_Character_Red.png.import
+│   │
+│   ├── Sounds
+│   │   ├── breaking_bad_theme.mp3
+│   │   └── breaking_bad_theme.mp3.import
+│   │
 │   ├── Tileset
 │   │   ├── Door.png
 │   │   ├── Door.png.import
@@ -348,178 +375,32 @@
 │   │   ├── kitchen.png
 │   │   ├── kitchen.png.import
 │   │   ├── kitchen16_blue.png
-│   │   ├── kitchen16_blue.png.import
-│   │   ├── white_tile1.png
-│   │   └── white_tile1.png.import
+│   │   └── kitchen16_blue.png.import
+│   │
+│   ├── UI
+│   │
 │   ├── early_methaphetamine_batch.png
 │   ├── early_methaphetamine_batch.png.import
 │   ├── particles
+│   │   ├── blood_particle.png
+│   │   ├── blood_particle.png.import
+│   │   ├── bubble_particle.png
+│   │   ├── bubble_particle.png.import
+│   │   ├── explosion_particle.png
+│   │   ├── explosion_particle.png.import
+│   │   ├── glass_shard.png
+│   │   ├── glass_shard.png.import
+│   │   ├── impact_particle.png
+│   │   ├── impact_particle.png.import
+│   │   ├── smoke_particle.png
+│   │   ├── smoke_particle.png.import
+│   │   ├── spark_particle.png
+│   │   └── spark_particle.png.import
+│   │
 │   ├── sil_tileset.png
 │   └── sil_tileset.png.import
+│
 ├── default_bus_layout.tres
-├── demo
-│   ├── LICENSE_ASSETS.md
-│   ├── agents
-│   │   ├── 01_agent_melee_simple.tscn
-│   │   ├── 02_agent_charger.tscn
-│   │   ├── 03_agent_imp.tscn
-│   │   ├── 04_agent_skirmisher.tscn
-│   │   ├── 05_agent_ranged.tscn
-│   │   ├── 06_agent_melee_combo.tscn
-│   │   ├── 07_agent_melee_nuanced.tscn
-│   │   ├── 08_agent_demon.tscn
-│   │   ├── 09_agent_summoner.tscn
-│   │   ├── agent_base.tscn
-│   │   ├── fireball
-│   │   │   ├── fireball.gd
-│   │   │   ├── fireball.gd.uid
-│   │   │   └── fireball.tscn
-│   │   ├── ninja_star
-│   │   │   ├── ninja_star.gd
-│   │   │   ├── ninja_star.gd.uid
-│   │   │   └── ninja_star.tscn
-│   │   ├── player
-│   │   │   ├── player.gd
-│   │   │   ├── player.gd.uid
-│   │   │   ├── player.tscn
-│   │   │   └── states
-│   │   ├── scripts
-│   │   │   ├── agent_base.gd
-│   │   │   ├── agent_base.gd.uid
-│   │   │   ├── health.gd
-│   │   │   ├── health.gd.uid
-│   │   │   ├── hitbox.gd
-│   │   │   ├── hitbox.gd.uid
-│   │   │   ├── hurtbox.gd
-│   │   │   └── hurtbox.gd.uid
-│   │   └── tutorial
-│   │       ├── tutorial_01_welcome.tscn
-│   │       ├── tutorial_02_introduction.tscn
-│   │       ├── tutorial_03_types.tscn
-│   │       ├── tutorial_04_sequence.tscn
-│   │       ├── tutorial_05_selector.tscn
-│   │       ├── tutorial_06_decorators.tscn
-│   │       ├── tutorial_07_more_decorators.tscn
-│   │       └── tutorial_08_final_touch.tscn
-│   ├── ai
-│   │   ├── tasks
-│   │   │   ├── arrive_pos.gd
-│   │   │   ├── arrive_pos.gd.uid
-│   │   │   ├── back_away.gd
-│   │   │   ├── back_away.gd.uid
-│   │   │   ├── face_target.gd
-│   │   │   ├── face_target.gd.uid
-│   │   │   ├── get_first_in_group.gd
-│   │   │   ├── get_first_in_group.gd.uid
-│   │   │   ├── in_range.gd
-│   │   │   ├── in_range.gd.uid
-│   │   │   ├── is_aligned_with_target.gd
-│   │   │   ├── is_aligned_with_target.gd.uid
-│   │   │   ├── move_forward.gd
-│   │   │   ├── move_forward.gd.uid
-│   │   │   ├── pursue.gd
-│   │   │   ├── pursue.gd.uid
-│   │   │   ├── select_flanking_pos.gd
-│   │   │   ├── select_flanking_pos.gd.uid
-│   │   │   ├── select_random_nearby_pos.gd
-│   │   │   └── select_random_nearby_pos.gd.uid
-│   │   └── trees
-│   │       ├── 01_agent_melee_simple.tres
-│   │       ├── 02_agent_charger.tres
-│   │       ├── 03_agent_imp.tres
-│   │       ├── 04_agent_skirmisher.tres
-│   │       ├── 05_agent_ranged.tres
-│   │       ├── 06_agent_melee_combo.tres
-│   │       ├── 07_agent_melee_nuanced.tres
-│   │       ├── 08_agent_demon.tres
-│   │       ├── 09_agent_summoner.tres
-│   │       └── tutorial
-│   ├── assets
-│   │   ├── agent_bobby.png
-│   │   ├── agent_bobby.png.import
-│   │   ├── agent_charger.png
-│   │   ├── agent_charger.png.import
-│   │   ├── agent_combo.png
-│   │   ├── agent_combo.png.import
-│   │   ├── agent_demon.png
-│   │   ├── agent_demon.png.import
-│   │   ├── agent_imp.png
-│   │   ├── agent_imp.png.import
-│   │   ├── agent_junior_pieces.png
-│   │   ├── agent_junior_pieces.png.import
-│   │   ├── agent_melee_nuanced.png
-│   │   ├── agent_melee_nuanced.png.import
-│   │   ├── agent_melee_simple.png
-│   │   ├── agent_melee_simple.png.import
-│   │   ├── agent_ranged.png
-│   │   ├── agent_ranged.png.import
-│   │   ├── agent_skirmisher.png
-│   │   ├── agent_skirmisher.png.import
-│   │   ├── agent_summoner.png
-│   │   ├── agent_summoner.png.import
-│   │   ├── arrow_left.png
-│   │   ├── arrow_left.png.import
-│   │   ├── arrow_right.png
-│   │   ├── arrow_right.png.import
-│   │   ├── dummy.png
-│   │   ├── dummy.png.import
-│   │   ├── env_clouds.png
-│   │   ├── env_clouds.png.import
-│   │   ├── env_gong.png
-│   │   ├── env_gong.png.import
-│   │   ├── env_ground.png
-│   │   ├── env_ground.png.import
-│   │   ├── env_plants.png
-│   │   ├── env_plants.png.import
-│   │   ├── env_rocks.png
-│   │   ├── env_rocks.png.import
-│   │   ├── fireball.png
-│   │   ├── fireball.png.import
-│   │   ├── fonts
-│   │   │   ├── junction_bold.otf
-│   │   │   ├── junction_bold.otf.import
-│   │   │   ├── knewave_regular.ttf
-│   │   │   └── knewave_regular.ttf.import
-│   │   ├── fx.png
-│   │   ├── fx.png.import
-│   │   ├── hp_bar.png
-│   │   ├── hp_bar.png.import
-│   │   ├── hp_over.png
-│   │   ├── hp_over.png.import
-│   │   ├── hp_under.png
-│   │   ├── hp_under.png.import
-│   │   ├── icon.svg
-│   │   ├── icon.svg.import
-│   │   ├── logo.png
-│   │   ├── logo.png.import
-│   │   ├── shadow.png
-│   │   ├── shadow.png.import
-│   │   ├── smoke.png
-│   │   ├── smoke.png.import
-│   │   ├── ui.theme
-│   │   ├── weapon_ninja_star.png
-│   │   └── weapon_ninja_star.png.import
-│   ├── props
-│   │   ├── dummy.gd
-│   │   ├── dummy.gd.uid
-│   │   ├── dummy.tscn
-│   │   ├── gong.gd
-│   │   ├── gong.gd.uid
-│   │   └── gong.tscn
-│   └── scenes
-│       ├── base
-│       │   ├── arena.tscn
-│       │   ├── clouds.tscn
-│       │   ├── code_edit.gd
-│       │   ├── code_edit.gd.uid
-│       │   ├── toggle_fullscreen.gd
-│       │   └── toggle_fullscreen.gd.uid
-│       ├── game.gd
-│       ├── game.gd.uid
-│       ├── game.tscn
-│       ├── showcase.gd
-│       ├── showcase.gd.uid
-│       └── showcase.tscn
 ├── dialogic
 │   ├── characters
 │   │   ├── JR.dch
@@ -532,8 +413,10 @@
 │   │   ├── doctor.dch.uid
 │   │   ├── hank.dch
 │   │   └── hank.dch.uid
+│   │
 │   ├── styles
 │   │   └── style-o.tres
+│   │
 │   └── timelines
 │       ├── diagnosis.dtl
 │       ├── diagnosis.dtl.uid
@@ -543,6 +426,7 @@
 │       ├── ridewithhank.dtl.uid
 │       ├── walter-skyler-jr-1st-inter.dtl
 │       └── walter-skyler-jr-1st-inter.dtl.uid
+│
 ├── icon.svg
 ├── icon.svg.import
 ├── project.godot
@@ -550,4 +434,4 @@
 └── quests
     └── GetToCar.tres
 
-47 directories, 504 files
+34 directories, 380 files

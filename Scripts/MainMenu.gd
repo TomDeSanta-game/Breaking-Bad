@@ -5,6 +5,8 @@ var menu_tween: Tween
 var is_transitioning = false
 
 func _ready():
+	SoundManager.set_sound_volume(0.1)
+	SoundManager.play_sound(load("res://assets/Sounds/breaking_bad_theme.mp3"), "SFX")
 	setup_audio()
 	setup_buttons()
 	animate_entrance()
@@ -59,18 +61,18 @@ func transition_to_scene(scene_path):
 	if ResourceLoader.exists(scene_path):
 		SceneManager.change_scene(scene_path)
 	else:
-		print("Scene not found: ", scene_path)
+		Log.warn("Scene not found: ", scene_path)
 		is_transitioning = false
 		animate_entrance()
 
-func _on_play_button_pressed():
-	transition_to_scene("res://Scenes/Game/MainGame.tscn")
+func _on_start_button_pressed():
+	transition_to_scene("res://Scenes/House.tscn")
 
 func _on_methlab_button_pressed():
-	transition_to_scene("res://Scenes/Game/Methlab.tscn")
+	transition_to_scene("res://Scenes/MethhLab.tscn")
 
 func _on_options_button_pressed():
-	transition_to_scene("res://Scenes/UI/Options.tscn")
+	Log.info("No options menu")
 
 func _on_quit_button_pressed():
 	get_tree().quit()

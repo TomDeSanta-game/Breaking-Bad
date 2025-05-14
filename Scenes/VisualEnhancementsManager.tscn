@@ -1,7 +1,6 @@
-[gd_scene load_steps=8 format=3 uid="uid://bqvsd5xgj5d5r"]
+[gd_scene load_steps=7 format=3 uid="uid://bqvsd5xgj5d5r"]
 
 [ext_resource type="Script" path="res://Scripts/visual_effects_manager.gd" id="1_b5qa2"]
-[ext_resource type="Script" path="res://Scripts/parallax_background_manager.gd" id="2_vbqe8"]
 [ext_resource type="Script" path="res://Scripts/texture_variation_system.gd" id="3_d6axo"]
 [ext_resource type="Script" path="res://Scripts/sprite_rotation_smoother.gd" id="4_a7r1n"]
 [ext_resource type="Script" path="res://Scripts/subpixel_animator.gd" id="5_f7fhd"]
@@ -22,14 +21,6 @@ shader_parameter/pixel_perfect = true
 
 [node name="VisualEffectsManager" type="Node" parent="."]
 script = ExtResource("1_b5qa2")
-
-[node name="ParallaxBackgroundManager" type="Node2D" parent="."]
-script = ExtResource("2_vbqe8")
-enabled = true
-default_strength = 1.0
-auto_scroll = false
-auto_scroll_speed = Vector2(20, 0)
-offset_scale = 1.0
 
 [node name="TextureVariationSystem" type="Node" parent="."]
 script = ExtResource("3_d6axo")
@@ -72,4 +63,4 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2 
+mouse_filter = 2

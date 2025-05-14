@@ -1,51 +1,56 @@
 extends Node2D
 
-@onready var player: Node2D = $Player
-@onready var car: Area2D = $CarCollidor
-@onready var Dialogic = get_node("/root/Dialogic")
-
-var car_entered = false
-var quest
+@onready var player = $Player
+@onready var skyler = $"NPC's/Skyler"
+@onready var walt_jr = $"NPC's/WaltJR"
 
 func _ready() -> void:
 	player.set_physics_process(false)
 	player.set_process_unhandled_input(false)
-	player.hide_ui(true)
-	Dialogic.timeline_ended.connect(on_dialog_timeline_ended)
-	register_console_commands()
-	car.body_entered.connect(_on_car_body_entered)
+	
+	player.visible = true
+	skyler.visible = true
+	walt_jr.visible = true
+	
+	fix_white_screen()
+	
+	if player.has_method("hide_ui"):
+		player.hide_ui(true)
+	
+	# Temporarily comment out Dialogic to see if it works without it
+	#Dialogic.timeline_ended.connect(on_dialog_timeline_ended)
+	#register_console_commands()
+	#car.body_entered.connect(_on_car_body_entered)
 	await get_tree().create_timer(1.0).timeout
-	Dialogic.start("walter-skyler-jr-1st-inter")
-
-func register_console_commands() -> void:
-	if LimboConsole:
-		LimboConsole.register_command(end_dialogic, "end_dialogic")
-
-func end_dialogic(_args = null) -> String:
-	if Dialogic.current_timeline:
-		Dialogic.end_timeline()
-		return "Timeline ended"
-	return "No active timeline"
-
-func on_dialog_timeline_ended() -> void:
+	
+	# Enable player control instead of waiting for dialog to end
 	player.set_physics_process(true)
 	player.set_process_unhandled_input(true)
-	player.hide_ui(false)
-	
-	quest = QuestSystem.get_quest("GetToCar")
-	if quest:
-		QuestSystem.start_quest(quest)
-		player.show_objective(quest.quest_objective)
+	if player.has_method("hide_ui"):
+		player.hide_ui(false)
 
-func _on_car_body_entered(body: Node2D) -> void:
-	if car_entered:
-		return
+func fix_white_screen():
+	var post_process = get_node_or_null("/root/UnifiedPostProcess")
+	if post_process and post_process.has_method("set_enabled"):
+		post_process.set_enabled(false)
 	
-	if body == player:
-		car_entered = true
-		QuestSystem.complete_quest(quest)
-		player.complete_objective()
-		player.hide_ui(true)
-		
-		await get_tree().create_timer(1.0).timeout
-		SceneManager.change_scene("res://Scenes/RideWithHank.tscn")
+	var effects_manager = get_node_or_null("/root/VisualEffectsManager")
+	if effects_manager:
+		for child in effects_manager.get_children():
+			if child is ColorRect:
+				child.visible = false
+	
+	var white_rect = find_white_rect(get_tree().root)
+	if white_rect:
+		white_rect.visible = false
+
+func find_white_rect(node):
+	if node is ColorRect and node.color.r > 0.9 and node.color.g > 0.9 and node.color.b > 0.9:
+		return node
+	
+	for child in node.get_children():
+		var result = find_white_rect(child)
+		if result:
+			return result
+	
+	return null

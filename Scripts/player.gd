@@ -87,8 +87,13 @@ var current_state: PlayerState = PlayerState.IDLE
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var interaction_ray: RayCast2D = $InteractionRay
+@onready var hud: CanvasLayer = $HUD
+@onready var heat_bar: ProgressBar = $HUD/MarginContainer/VBoxContainer/HeatBar
+@onready var stam_bar: ProgressBar = $HUD/MarginContainer/VBoxContainer/StaminaBar
 
 func _ready() -> void:
+	hud.show()
+
 	current_health = starting_health
 	current_stamina = max_stamina
 	active_speed = max_speed
@@ -126,7 +131,7 @@ func _physics_process(delta: float) -> void:
 
 func handle_input() -> void:
 	direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down").normalized()
-	is_sprinting = Input.is_action_pressed("sprint") and can_sprint
+	is_sprinting = Input.is_action_pressed("Sprint") and can_sprint
 	
 	if Input.is_action_just_pressed("slow_motion") and can_use_slow_motion and not slow_motion_active and current_stamina >= slow_motion_stamina_cost:
 		activate_slow_motion()
@@ -421,15 +426,21 @@ func handle_animation() -> void:
 	if not sprite:
 		return
 	
+	var direction_prefix = "Right"
+	if abs(direction.y) > abs(direction.x) and direction.y < 0:
+		direction_prefix = "Up"
+	elif abs(direction.y) > abs(direction.x) and direction.y > 0:
+		direction_prefix = "Down"
+	
 	if is_dashing:
-		sprite.play("dash" if sprite.has_animation("dash") else "walk")
+		sprite.play(direction_prefix + "_Run")
 		sprite.speed_scale = 1.5
 	elif velocity.length() > max_speed * 0.1:
 		var speed_percent = velocity.length() / max_speed
-		sprite.play("run" if is_sprinting and sprite.has_animation("run") else "walk")
+		sprite.play(direction_prefix + "_Run")
 		sprite.speed_scale = lerp(0.8, 1.5, speed_percent)
 	else:
-		sprite.play("idle")
+		sprite.play(direction_prefix + "_Idle")
 		sprite.speed_scale = 1.0
 	
 	if velocity.x != 0:
@@ -524,7 +535,7 @@ func set_state(new_state: PlayerState) -> void:
 	if new_state == current_state:
 		return
 		
-	var old_state = current_state
+	var _old_state = current_state
 	current_state = new_state
 	
 	var state_name = ""
@@ -593,3 +604,23 @@ func _on_detected(detector_type: String) -> void:
 			add_heat(20.0)
 		"civilian":
 			add_heat(5.0)
+
+func show_objective(objective_text: String):
+	if objective_text.is_empty():
+		return
+	
+	var ui_controller = get_node_or_null("/root/UIController")
+	if ui_controller and ui_controller.has_method("show_objective"):
+		ui_controller.show_objective(objective_text)
+
+func complete_objective():
+	var ui_controller = get_node_or_null("/root/UIController")
+	if ui_controller and ui_controller.has_method("complete_objective"):
+		ui_controller.complete_objective()
+
+func hide_ui(should_hide: bool = true):
+	var _ui_controller = get_node_or_null("/root/UIController")
+	var canvas_layer = get_node_or_null("/root/UIController/UIIndicators")
+	
+	if canvas_layer:
+		canvas_layer.visible = !should_hide

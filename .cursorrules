@@ -67,3 +67,4 @@ git push
 - Foster understanding of "why" behind solutions, not just "how"
 - Demonstrate industry best practices relevant to commercial game development
 - Avoid unnecessary abstractions that don't serve the project's goals
+- Do not modify any files inside addons

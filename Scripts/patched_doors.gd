@@ -9,7 +9,6 @@ extends StaticBody2D
 
 var door_scene: PackedScene = preload("res://Scenes/Door.tscn")
 var doors: Array = []
-var sprite_2d: Sprite2D
 var opened: bool = false
 
 func _ready() -> void:
@@ -26,12 +25,11 @@ func _ready() -> void:
 			door.input_pickable = true
 			add_child(door)
 			doors.append(door)
-			
-	sprite_2d = $Sprite2D
+	
 	button = get_node_or_null("Button")
 	
-	if button:
-		button.pressed.connect(self._on_button_pressed)
+	if button and !button.pressed.is_connected(_on_button_pressed):
+		button.pressed.connect(_on_button_pressed)
 		
 	set_active(false)
 	

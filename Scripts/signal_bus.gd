@@ -25,6 +25,7 @@ enum SignalCategory {
 @warning_ignore("unused_signal") signal player_objective_updated(objective_id, text, completed)
 @warning_ignore("unused_signal") signal player_event(event_type, data)
 @warning_ignore("unused_signal") signal player_damaged(damage_amount, attacker_position)
+@warning_ignore("unused_signal") signal player_health_changed(health, max_health)
 
 @warning_ignore("unused_signal") signal tension_changed(current, old)
 @warning_ignore("unused_signal") signal tension_level_changed(level_name, previous_level)
@@ -97,6 +98,7 @@ enum SignalCategory {
 @warning_ignore("unused_signal") signal bloom_settings_changed(enabled, intensity, threshold)
 @warning_ignore("unused_signal") signal ambient_occlusion_settings_changed(enabled, intensity, radius)
 @warning_ignore("unused_signal") signal dithering_settings_changed(enabled, intensity, scale)
+@warning_ignore("unused_signal") signal apply_immediate_effect(effect_name, duration)
 
 @warning_ignore("unused_signal") signal money_changed(current_amount)
 @warning_ignore("unused_signal") signal business_purchased(business_data)

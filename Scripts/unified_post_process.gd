@@ -3,25 +3,28 @@ class_name PostProcessingSystem
 
 signal post_processing_ready
 
-@export var viewport: SubViewport
-@export var enabled: bool = true
+@export var viewport: SubViewport = null
+@export var enabled: bool = false
 @export var initial_quality_level: int = 1
 
 var post_process_rect: ColorRect
 var post_process_material: ShaderMaterial
 var is_initialized: bool = false
 
+var vignette_enabled: bool = false
 var vignette_intensity: float = 0.4
 var vignette_opacity: float = 0.5
 var vignette_color: Color = Color(0.0, 0.0, 0.0, 1.0)
 
+var grain_enabled: bool = false
 var grain_amount: float = 0.05
 var grain_size: float = 1.0
 var grain_speed: float = 1.0
 
+var aberration_enabled: bool = false
 var aberration_amount: float = 0.5
-var aberration_enabled: bool = true
 
+var heat_distortion_enabled: bool = false
 var heat_distortion_amount: float = 0.0
 var heat_distortion_speed: float = 0.1
 var heat_center: Vector2 = Vector2(0.5, 0.5)
@@ -62,10 +65,10 @@ func _ready():
 	call_deferred("setup_post_processing")
 	
 	var signal_bus = get_node("/root/SignalBus")
-	signal_bus.connect("tension_level_changed", Callable(self, "_on_tension_level_changed"))
-	signal_bus.connect("player_health_changed", Callable(self, "_on_player_health_changed"))
-	signal_bus.connect("environment_changed", Callable(self, "_on_environment_changed"))
-	signal_bus.connect("apply_immediate_effect", Callable(self, "_on_apply_immediate_effect"))
+	signal_bus.tension_level_changed.connect(_on_tension_level_changed)
+	signal_bus.player_health_changed.connect(_on_player_health_changed)
+	signal_bus.environment_changed.connect(_on_environment_changed)
+	signal_bus.apply_immediate_effect.connect(_on_apply_immediate_effect)
 	
 	var noise = FastNoiseLite.new()
 	noise.noise_type = FastNoiseLite.TYPE_PERLIN
@@ -80,32 +83,25 @@ func _ready():
 	heat_noise_texture = noise_texture
 
 func setup_post_processing():
-	if not viewport:
-		return
-	
-	post_process_rect = ColorRect.new()
-	post_process_rect.material = load("res://Resources/Shaders/post_process.gdshader")
-	post_process_material = post_process_rect.material
-	
-	post_process_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-	viewport.add_child(post_process_rect)
-	
-	post_process_rect.visible = enabled
-	is_initialized = true
-	
-	update_shader_parameters()
-	emit_signal("post_processing_ready")
+	# Skip post-processing initialization completely
+	print("Post-processing permanently disabled")
+	is_initialized = false
+	enabled = false
+	self.process_mode = Node.PROCESS_MODE_DISABLED
+	post_processing_ready.emit()
+	return
 
 func update_shader_parameters():
-	if not is_initialized:
+	# Skip updating shader parameters since post-processing is disabled
+	if not is_initialized or not post_process_material or not enabled:
 		return
 	
-	post_process_material.set_shader_parameter("vignette_enabled", true)
+	post_process_material.set_shader_parameter("vignette_enabled", vignette_enabled)
 	post_process_material.set_shader_parameter("vignette_intensity", vignette_intensity)
 	post_process_material.set_shader_parameter("vignette_opacity", vignette_opacity)
 	post_process_material.set_shader_parameter("vignette_color", vignette_color)
 	
-	post_process_material.set_shader_parameter("grain_enabled", true)
+	post_process_material.set_shader_parameter("grain_enabled", grain_enabled)
 	post_process_material.set_shader_parameter("grain_amount", grain_amount)
 	post_process_material.set_shader_parameter("grain_size", grain_size)
 	post_process_material.set_shader_parameter("grain_speed", grain_speed)
@@ -113,12 +109,15 @@ func update_shader_parameters():
 	post_process_material.set_shader_parameter("aberration_enabled", aberration_enabled)
 	post_process_material.set_shader_parameter("aberration_amount", aberration_amount)
 	
-	post_process_material.set_shader_parameter("heat_distortion_enabled", true)
-	post_process_material.set_shader_parameter("heat_noise", heat_noise_texture)
-	post_process_material.set_shader_parameter("heat_distortion_amount", heat_distortion_amount)
-	post_process_material.set_shader_parameter("heat_distortion_speed", heat_distortion_speed)
-	post_process_material.set_shader_parameter("heat_center", heat_center)
-	post_process_material.set_shader_parameter("heat_radius", heat_radius)
+	if heat_noise_texture:
+		post_process_material.set_shader_parameter("heat_distortion_enabled", heat_distortion_enabled)
+		post_process_material.set_shader_parameter("heat_noise", heat_noise_texture)
+		post_process_material.set_shader_parameter("heat_distortion_amount", heat_distortion_amount)
+		post_process_material.set_shader_parameter("heat_distortion_speed", heat_distortion_speed)
+		post_process_material.set_shader_parameter("heat_center", heat_center)
+		post_process_material.set_shader_parameter("heat_radius", heat_radius)
+	else:
+		post_process_material.set_shader_parameter("heat_distortion_enabled", false)
 	
 	post_process_material.set_shader_parameter("depth_blend", depth_blend)
 	post_process_material.set_shader_parameter("depth_range", depth_range)
@@ -149,6 +148,9 @@ func update_shader_parameters():
 	
 	post_process_material.set_shader_parameter("contrast_enabled", contrast_enabled)
 	post_process_material.set_shader_parameter("contrast_amount", contrast_amount)
+	
+	# Add temperature parameter
+	post_process_material.set_shader_parameter("temperature", 0.0)
 
 func set_vignette(intensity: float, opacity: float, color: Color = Color(0.0, 0.0, 0.0, 1.0)):
 	vignette_intensity = intensity
