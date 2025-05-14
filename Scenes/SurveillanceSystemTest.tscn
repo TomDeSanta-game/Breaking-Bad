@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="root" type="Node2D"]
+
+[node name="SurveillanceTest" type="Node2D" parent="."]
+script = "res://Systems/Scripts/surveillance_test.gd"

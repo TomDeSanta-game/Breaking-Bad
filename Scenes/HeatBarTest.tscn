@@ -1,0 +1,112 @@
+[gd_scene load_steps=3 format=3 uid="uid://i6xcyriqv8vj"]
+
+[ext_resource type="PackedScene" uid="uid://chohyutjw50e8" path="res://UI/Scenes/hud.tscn" id="1_13ewj"]
+
+[sub_resource type="GDScript" id="GDScript_t2d6i"]
+script/source = "extends Node2D
+
+@onready var heat_level = 0
+@onready var level_names = [\"NONE\", \"LOW\", \"MEDIUM\", \"HIGH\", \"WANTED\"]
+@onready var info_label = $UI/Controls/InfoLabel
+
+func _ready():
+	$UI/Controls/IncreaseButton.pressed.connect(increase_heat)
+	$UI/Controls/DecreaseButton.pressed.connect(decrease_heat)
+	$UI/Controls/MaxButton.pressed.connect(max_heat)
+	$UI/Controls/MinButton.pressed.connect(min_heat)
+	update_info_label()
+
+func increase_heat():
+	var old_level = heat_level
+	heat_level = min(heat_level + 1, 4)
+	emit_heat_change(old_level)
+
+func decrease_heat():
+	var old_level = heat_level
+	heat_level = max(heat_level - 1, 0)
+	emit_heat_change(old_level)
+
+func max_heat():
+	var old_level = heat_level
+	heat_level = 4
+	emit_heat_change(old_level)
+
+func min_heat():
+	var old_level = heat_level
+	heat_level = 0
+	emit_heat_change(old_level)
+
+func emit_heat_change(old_level):
+	SignalBus.heat_level_changed.emit(heat_level, old_level)
+	update_info_label()
+
+func update_info_label():
+	if heat_level < level_names.size():
+		info_label.text = \"Current Heat Level: \" + level_names[heat_level]
+"
+
+[node name="HeatBarTest" type="Node2D"]
+script = SubResource("GDScript_t2d6i")
+
+[node name="HUD" parent="." instance=ExtResource("1_13ewj")]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Controls" type="PanelContainer" parent="UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -157.0
+offset_top = -66.0
+offset_right = 157.0
+offset_bottom = 66.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Controls"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Title" type="Label" parent="UI/Controls/VBoxContainer"]
+layout_mode = 2
+text = "Heat Bar Test"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/Controls/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="DecreaseButton" type="Button" parent="UI/Controls/HBoxContainer"]
+layout_mode = 2
+text = "Decrease Heat"
+
+[node name="VSeparator" type="VSeparator" parent="UI/Controls/HBoxContainer"]
+layout_mode = 2
+
+[node name="IncreaseButton" type="Button" parent="UI/Controls/HBoxContainer"]
+layout_mode = 2
+text = "Increase Heat"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UI/Controls/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="MinButton" type="Button" parent="UI/Controls/HBoxContainer2"]
+layout_mode = 2
+text = "Minimum Heat"
+
+[node name="VSeparator" type="VSeparator" parent="UI/Controls/HBoxContainer2"]
+layout_mode = 2
+
+[node name="MaxButton" type="Button" parent="UI/Controls/HBoxContainer2"]
+layout_mode = 2
+text = "Maximum Heat"
+
+[node name="InfoLabel" type="Label" parent="UI/Controls"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Current Heat Level: NONE"
+horizontal_alignment = 1 

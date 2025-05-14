@@ -1,0 +1,60 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://UI/Scripts/CarWashGame/CarModel.gd" id="1_qn5m6"]
+
+[node name="CarModel" type="Node2D"]
+script = ExtResource("1_qn5m6")
+
+[node name="CarSprite" type="Sprite2D" parent="."]
+position = Vector2(0, 0)
+scale = Vector2(3, 3)
+
+[node name="WaterParticles" type="CPUParticles2D" parent="."]
+position = Vector2(0, -100)
+emitting = false
+amount = 50
+lifetime = 2.0
+randomness = 0.5
+emission_shape = 3
+emission_rect_extents = Vector2(200, 10)
+direction = Vector2(0, 1)
+spread = 15.0
+gravity = Vector2(0, 200)
+initial_velocity_min = 50.0
+initial_velocity_max = 100.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color = Color(0, 0.7, 1, 0.7)
+
+[node name="PolishParticles" type="CPUParticles2D" parent="."]
+position = Vector2(0, 0)
+emitting = false
+amount = 30
+lifetime = 1.0
+randomness = 0.3
+emission_shape = 1
+emission_sphere_radius = 50.0
+spread = 180.0
+gravity = Vector2(0, 0)
+angular_velocity_min = -90.0
+angular_velocity_max = 90.0
+radial_accel_min = -50.0
+radial_accel_max = 50.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color = Color(1, 1, 0.8, 0.5)
+
+[node name="WaxParticles" type="CPUParticles2D" parent="."]
+position = Vector2(0, 0)
+emitting = false
+amount = 40
+lifetime = 1.5
+randomness = 0.4
+emission_shape = 1
+emission_sphere_radius = 70.0
+gravity = Vector2(0, 20)
+angular_velocity_min = -45.0
+angular_velocity_max = 45.0
+scale_amount_min = 2.0
+scale_amount_max = 5.0
+color = Color(1, 1, 1, 0.6) 

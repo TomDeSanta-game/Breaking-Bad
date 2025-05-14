@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3 uid="uid://bis38h5h7qbya"]
+
+[ext_resource type="Script" uid="uid://bgu7wo13qhy8n" path="res://Levels/CarWash/car_wash.gd" id="1_s5vpu"]
+[ext_resource type="Texture2D" uid="uid://bwdejg7x452g5" path="res://assets/sil_tileset.png" id="2_3niah"]
+[ext_resource type="PackedScene" uid="uid://dextyluhrr7ge" path="res://Entities/Scenes/Player/player.tscn" id="3_35cbo"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_665c5"]
+texture = ExtResource("2_3niah")
+0:0/size_in_atlas = Vector2i(2, 2)
+0:0/0 = 0
+2:0/size_in_atlas = Vector2i(2, 2)
+2:0/0 = 0
+0:2/size_in_atlas = Vector2i(2, 2)
+0:2/0 = 0
+2:2/size_in_atlas = Vector2i(2, 2)
+2:2/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_1j7oe"]
+sources/0 = SubResource("TileSetAtlasSource_665c5")
+
+[node name="CarWashLevel" type="Node2D"]
+script = ExtResource("1_s5vpu")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_1j7oe")
+
+[node name="Player" parent="." instance=ExtResource("3_35cbo")]

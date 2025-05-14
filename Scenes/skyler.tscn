@@ -1,0 +1,57 @@
+[gd_scene load_steps=8 format=3 uid="uid://dpqsryt6e4dw6"]
+
+[ext_resource type="PackedScene" path="res://Scenes/npc_base.tscn" id="1_t313i"]
+[ext_resource type="Texture2D" uid="uid://7clsxt66fnv4" path="res://assets/Characters/Low-Poly-Characters/Characters_V3_Colour.png" id="2_8xscy"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v0r7n"]
+atlas = ExtResource("2_8xscy")
+region = Rect2(16, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_42jbu"]
+atlas = ExtResource("2_8xscy")
+region = Rect2(0, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_icqb3"]
+atlas = ExtResource("2_8xscy")
+region = Rect2(32, 48, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3yf0n"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v0r7n")
+}],
+"loop": true,
+"name": &"Back",
+"speed": 0.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_42jbu")
+}],
+"loop": true,
+"name": &"Front",
+"speed": 0.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_icqb3")
+}],
+"loop": true,
+"name": &"Right",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vpqpi"]
+size = Vector2(15, 16)
+
+[node name="Skyler" instance=ExtResource("1_t313i")]
+
+[node name="AnimatedSprite2D" parent="." index="0"]
+sprite_frames = SubResource("SpriteFrames_3yf0n")
+animation = &"Back"
+autoplay = "Back"
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_vpqpi")

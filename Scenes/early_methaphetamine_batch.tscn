@@ -1,0 +1,76 @@
+[gd_scene load_steps=4 format=3 uid="uid://bdmwd2dk0urho"]
+
+[ext_resource type="Script" uid="uid://deykicxvsbksl" path="res://Objects/Scripts/Early_Meth_Batch/early_methaphetamine_batch.gd" id="1_sog1r"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ojbcy"]
+size = Vector2(40, 40)
+
+[sub_resource type="Gradient" id="Gradient_jxtue"]
+colors = PackedColorArray(0.247059, 0.807843, 0.94902, 1, 0.282353, 0.596078, 0.968627, 1)
+
+[node name="Early_Methaphetamine_Batch" type="Area2D"]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_sog1r")
+
+[node name="CrystalContainer" type="Node2D" parent="."]
+position = Vector2(20, 20)
+
+[node name="Crystal1" type="Polygon2D" parent="CrystalContainer"]
+color = Color(0.262745, 0.662745, 0.847059, 0.8)
+polygon = PackedVector2Array(-12, 5, -5, -10, 7, -3, 3, 12, -8, 12)
+
+[node name="Crystal2" type="Polygon2D" parent="CrystalContainer"]
+position = Vector2(8, -2)
+rotation = 0.349066
+color = Color(0.254902, 0.74902, 0.87451, 0.9)
+polygon = PackedVector2Array(-7, 3, -3, -7, 5, -5, 8, 3, 2, 8, -5, 6)
+
+[node name="Crystal3" type="Polygon2D" parent="CrystalContainer"]
+position = Vector2(-6, -5)
+rotation = -0.261799
+color = Color(0.317647, 0.639216, 0.929412, 0.85)
+polygon = PackedVector2Array(-6, 2, -2, -6, 6, -3, 3, 5, -2, 5)
+
+[node name="Highlights" type="Node2D" parent="CrystalContainer"]
+
+[node name="Highlight1" type="Line2D" parent="CrystalContainer/Highlights"]
+position = Vector2(-3, 0)
+points = PackedVector2Array(-5, 0, 0, -6, 7, -2)
+width = 1.5
+default_color = Color(0.737255, 0.909804, 1, 0.819608)
+
+[node name="Highlight2" type="Line2D" parent="CrystalContainer/Highlights"]
+position = Vector2(1, 0)
+points = PackedVector2Array(3, -3, 8, 0, 5, 5)
+width = 1.2
+default_color = Color(0.737255, 0.909804, 1, 0.819608)
+
+[node name="Sparkles" type="CPUParticles2D" parent="CrystalContainer"]
+emitting = false
+amount = 6
+lifetime = 0.8
+one_shot = true
+explosiveness = 0.7
+emission_shape = 1
+emission_sphere_radius = 15.0
+direction = Vector2(0, -1)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 10.0
+initial_velocity_max = 20.0
+scale_amount_min = 0.5
+scale_amount_max = 1.5
+color = Color(0.85098, 0.968627, 1, 0.878431)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(20, 20)
+shape = SubResource("RectangleShape2D_ojbcy")
+
+[node name="GlowTimer" type="Timer" parent="."]
+wait_time = 1.5
+autostart = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="GlowTimer" to="." method="_on_glow_timer_timeout"]

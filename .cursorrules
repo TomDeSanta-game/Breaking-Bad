@@ -1,0 +1,69 @@
+# BREAKING BAD GAME - DEVELOPMENT GUIDELINES
+
+## PROJECT OVERVIEW
+- Commercial pixel art game based on Breaking Bad television series
+- Faithfully recreates the main storyline as an interactive experience
+- Target platform: Steam
+
+## AI ASSISTANT BEHAVIOR
+- Teach concepts as an experienced senior developer would
+- Provide clear explanations in chat with practical context
+- Balance theoretical knowledge with practical implementation
+- Avoid unnecessary abstraction
+- Be concise but thorough
+
+## CODE STANDARDS
+- Write clean, performant code optimized for Godot's strengths
+- NO COMMENTS in code files (this is a strict requirement)
+- Maintain separation between logic, visuals, and data layers
+- Focus on modularity without over-engineering
+- Implement proper error handling and data validation
+
+## ERROR RESOLUTION PROCESS
+1. Identify warnings and errors
+2. Consult Godot GDScript documentation for correct approach
+3. Implement solution
+4. Verify error is completely resolved
+
+## PROJECT ARCHITECTURE PRIORITIES
+- Authentic Breaking Bad storyline integration
+- Elegant character interaction systems
+- Clean progression mechanics
+- Robust state management
+- Optimized performance for target platforms
+
+## DEVELOPMENT PRACTICES
+- Systematic debugging techniques
+- Clear explanation of the "why" behind solutions
+- Industry best practices for commercial game development
+- Balanced architecture decisions (not too simple, not over-engineered)
+- Performance optimization at appropriate development stages
+
+## FILE STRUCTURE
+- See project_structure.txt for current detailed file tree
+
+## VERSION CONTROL WORKFLOW
+```zsh
+git add .
+git commit -m "Descriptive commit message"
+git push
+```
+
+## KEY DEVELOPMENT PRINCIPLES
+1. Player experience comes first
+2. Breaking Bad authenticity is essential
+3. Code quality ensures project scalability
+4. Performance optimization is ongoing
+5. Maintainability enables efficient team collaboration
+
+## MOST IMPORTANT
+- Deliver concise, precise explanations with practical examples
+- Optimize code for performance with focus on Godot's strengths
+- Prioritize Breaking Bad storyline authenticity in all game mechanics
+- Implement systems that elegantly handle character interactions and progression
+- Show systematic debugging techniques that build problem-solving skills
+- Maintain clean architecture separating logic, visuals, and data
+- Balance code modularity with pragmatic simplicity
+- Foster understanding of "why" behind solutions, not just "how"
+- Demonstrate industry best practices relevant to commercial game development
+- Avoid unnecessary abstractions that don't serve the project's goals

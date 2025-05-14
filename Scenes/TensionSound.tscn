@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cwjbqq47vq83x"]
+
+[ext_resource type="Script" path="res://Systems/Scripts/tension_sound.gd" id="1_c0o46"]
+
+[node name="TensionSound" type="Node"]
+script = ExtResource("1_c0o46")

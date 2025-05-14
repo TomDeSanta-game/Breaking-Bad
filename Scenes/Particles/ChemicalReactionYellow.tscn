@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://be4k56m8qkmhp"]
+
+[ext_resource type="Texture2D" uid="uid://bsm4y0urxf1xc" path="res://assets/particles/bubble_particle.png" id="1_fmg28"]
+
+[sub_resource type="Gradient" id="Gradient_qcx6g"]
+offsets = PackedFloat32Array(0, 0.234043, 0.5, 0.886525, 1)
+colors = PackedColorArray(0.768389, 0.740006, 0.104575, 0, 0.929412, 0.878431, 0.12549, 0.784314, 0.976471, 0.929412, 0.196078, 0.94902, 0.976471, 0.894118, 0.309804, 0.501961, 0.894118, 0.705882, 0.223529, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_gykrv"]
+gradient = SubResource("Gradient_qcx6g")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_nku3t"]
+emission_shape = 3
+emission_box_extents = Vector3(20, 2, 1)
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 10.0
+gravity = Vector3(0, -40, 0)
+initial_velocity_min = 20.0
+initial_velocity_max = 40.0
+angular_velocity_min = -20.0
+angular_velocity_max = 20.0
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+damping_min = 1.0
+damping_max = 5.0
+angle_min = -180.0
+angle_max = 180.0
+scale_min = 0.3
+scale_max = 0.8
+color_ramp = SubResource("GradientTexture1D_gykrv")
+turbulence_enabled = true
+turbulence_noise_strength = 2.0
+turbulence_noise_scale = 3.0
+
+[node name="ChemicalReactionYellow" type="GPUParticles2D"]
+amount = 70
+process_material = SubResource("ParticleProcessMaterial_nku3t")
+texture = ExtResource("1_fmg28")
+lifetime = 3.0
+randomness = 0.3
+local_coords = true 

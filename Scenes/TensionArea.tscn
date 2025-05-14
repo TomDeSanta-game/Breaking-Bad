@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjj2dcs51k03t"]
+
+[ext_resource type="Script" path="res://Systems/Scripts/tension_area.gd" id="1_yd81u"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y0kx8"]
+size = Vector2(200, 200)
+
+[node name="TensionArea" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_yd81u")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_y0kx8")

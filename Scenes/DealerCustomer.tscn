@@ -1,0 +1,50 @@
+[gd_scene load_steps=5 format=3 uid="uid://cge2b1t7j1lc3"]
+
+[ext_resource type="Script" path="res://Systems/Scripts/dealer_customer.gd" id="1_ujmgd"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_0n1jw"]
+size = Vector2(32, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4xh4v"]
+size = Vector2(24, 24)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bx5r3"]
+radius = 150.0
+
+[node name="DealerCustomer" type="CharacterBody2D"]
+collision_layer = 2
+script = ExtResource("1_ujmgd")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("PlaceholderTexture2D_0n1jw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_4xh4v")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 10.0
+target_desired_distance = 10.0
+avoidance_enabled = true
+radius = 20.0
+debug_enabled = true
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_bx5r3")
+
+[node name="DialogueLabel" type="Label" parent="."]
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = -30.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+text = "Hey, you got something?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true

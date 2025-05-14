@@ -1,0 +1,57 @@
+[gd_scene load_steps=6 format=3 uid="uid://bnm65agwqdim4"]
+
+[ext_resource type="Texture2D" uid="uid://ce7wdjr1kj8y5" path="res://assets/particles/explosion_particle.png" id="1_05tky"]
+
+[sub_resource type="Gradient" id="Gradient_ckswe"]
+offsets = PackedFloat32Array(0, 0.187919, 0.466321, 0.753476, 1)
+colors = PackedColorArray(0.956863, 0.552941, 0.0901961, 1, 0.932549, 0.387919, 0.0779221, 1, 0.87451, 0.239216, 0.054902, 0.847059, 0.364706, 0.12549, 0.0431373, 0.54902, 0.0705882, 0.0509804, 0.0313726, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_xtnbl"]
+gradient = SubResource("Gradient_ckswe")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_63gw0"]
+emission_shape = 1
+emission_sphere_radius = 5.0
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 40.0
+initial_velocity_max = 100.0
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+linear_accel_min = -20.0
+linear_accel_max = -10.0
+damping_min = 20.0
+damping_max = 30.0
+angle_min = -720.0
+angle_max = 720.0
+scale_min = 0.5
+scale_max = 1.5
+color_ramp = SubResource("GradientTexture1D_xtnbl")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4ow0m"]
+radius = 50.0
+
+[node name="ExplosionSmall" type="GPUParticles2D"]
+emitting = false
+amount = 50
+process_material = SubResource("ParticleProcessMaterial_63gw0")
+texture = ExtResource("1_05tky")
+lifetime = 1.0
+one_shot = true
+explosiveness = 0.9
+randomness = 0.2
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 3
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_4ow0m")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 1.5
+one_shot = true
+autostart = true 

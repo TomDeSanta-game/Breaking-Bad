@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3 uid="uid://dhup1ytdan4yy"]
+
+[ext_resource type="PackedScene" path="res://Scenes/npc_base.tscn" id="1_tndpk"]
+[ext_resource type="Texture2D" uid="uid://7clsxt66fnv4" path="res://assets/Characters/Low-Poly-Characters/Characters_V3_Colour.png" id="2_acrs3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rqsi2"]
+atlas = ExtResource("2_acrs3")
+region = Rect2(32, 32, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_x5oyd"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rqsi2")
+}],
+"loop": true,
+"name": &"Drun",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4s5v4"]
+size = Vector2(15, 16)
+
+[node name="WaltJR" instance=ExtResource("1_tndpk")]
+
+[node name="AnimatedSprite2D" parent="." index="0"]
+sprite_frames = SubResource("SpriteFrames_x5oyd")
+animation = &"Drun"
+flip_h = true
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_4s5v4")

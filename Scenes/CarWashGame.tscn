@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://cduevh3w5jqjp"]
+
+[ext_resource type="PackedScene" uid="uid://deta1fjremim5" path="res://UI/Scenes/CarWashGame/CarWashUI.tscn" id="1_cqw3m"]
+[ext_resource type="Script" uid="uid://dugerqgt4fhes" path="res://UI/Scripts/CarWashGame/CarWashGame.gd" id="1_geoyu"]
+[ext_resource type="PackedScene" uid="uid://dextyluhrr7ge" path="res://Entities/Scenes/Player/player.tscn" id="2_v3bcg"]
+
+[node name="CarWashGame" type="Node"]
+script = ExtResource("1_geoyu")
+
+[node name="CarWashUI" parent="." instance=ExtResource("1_cqw3m")]
+
+[node name="Player" parent="." instance=ExtResource("2_v3bcg")]
+position = Vector2(580, 565)
+
+[node name="AnimatedSprite2D" parent="Player" index="0"]
+scale = Vector2(5, 5)
+
+[node name="Camera2D" parent="Player" index="2"]
+position = Vector2(-4, -241)
+zoom = Vector2(1, 1)
+
+[editable path="Player"]

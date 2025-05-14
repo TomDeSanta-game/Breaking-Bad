@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=3 uid="uid://dhmm3x31xxj44"]
+
+[ext_resource type="Texture2D" uid="uid://ddvxvyuk64vqt" path="res://assets/particles/blood_particle.png" id="1_uysdw"]
+
+[sub_resource type="Gradient" id="Gradient_0wt17"]
+offsets = PackedFloat32Array(0, 0.234043, 0.664894, 1)
+colors = PackedColorArray(0.705882, 0.0862745, 0.0862745, 1, 0.58, 0.0551, 0.0551, 1, 0.47, 0.0376, 0.0376, 0.72, 0.32, 0.0416, 0.0416, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_6xmji"]
+gradient = SubResource("Gradient_0wt17")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_1cnm4"]
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 20.0
+gravity = Vector3(0, 300, 0)
+initial_velocity_min = 150.0
+initial_velocity_max = 250.0
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+damping_min = 50.0
+damping_max = 100.0
+angle_min = -720.0
+angle_max = 720.0
+scale_min = 0.5
+scale_max = 1.2
+color_ramp = SubResource("GradientTexture1D_6xmji")
+collision_mode = 1
+collision_friction = 0.2
+collision_bounce = 0.1
+
+[node name="BloodSplatter" type="GPUParticles2D"]
+emitting = false
+amount = 40
+process_material = SubResource("ParticleProcessMaterial_1cnm4")
+texture = ExtResource("1_uysdw")
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
+randomness = 0.2
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 1.0
+one_shot = true
+autostart = true 

@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3 uid="uid://ne8vjqhvkbhf"]
+
+[ext_resource type="Script" uid="uid://dwhpv3mke53i0" path="res://Scripts/patched_doors.gd" id="1_1a060"]
+[ext_resource type="Texture2D" uid="uid://bgaa836icoqgk" path="res://assets/Tileset/Door.png" id="1_u1rhn"]
+[ext_resource type="FontFile" uid="uid://bgx8gu7aobui5" path="res://assets/Fonts/pixel_font.ttf" id="2_52rhx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u1rhn"]
+size = Vector2(32, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_52rhx"]
+size = Vector2(32, 20)
+
+[node name="PatchedDoors" type="StaticBody2D"]
+script = ExtResource("1_1a060")
+
+[node name="Sprite2D_left" type="Sprite2D" parent="."]
+texture = ExtResource("1_u1rhn")
+hframes = 4
+
+[node name="Sprite2D_right" type="Sprite2D" parent="."]
+position = Vector2(16, 0)
+texture = ExtResource("1_u1rhn")
+flip_h = true
+hframes = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(8, 0)
+shape = SubResource("RectangleShape2D_u1rhn")
+
+[node name="Button" type="Button" parent="."]
+visible = false
+texture_filter = 3
+offset_left = -6.0
+offset_top = 8.0
+offset_right = 22.0
+offset_bottom = 16.0
+theme_override_fonts/font = ExtResource("2_52rhx")
+theme_override_font_sizes/font_size = 4
+
+[node name="DA" type="Area2D" parent="."]
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DA"]
+position = Vector2(8, 0)
+shape = SubResource("RectangleShape2D_52rhx")
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="body_entered" from="DA" to="." method="_on_da_body_entered"]
+[connection signal="body_exited" from="DA" to="." method="_on_da_body_exited"]

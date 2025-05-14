@@ -1,0 +1,295 @@
+[gd_scene load_steps=9 format=3 uid="uid://c8nmdrljm54ot"]
+
+[ext_resource type="Script" path="res://Systems/Scripts/dynamic_lighting_system.gd" id="1_dkgve"]
+[ext_resource type="Script" path="res://Systems/Scripts/environment_light_controller.gd" id="2_l7tgr"]
+[ext_resource type="Script" path="res://Systems/Scripts/dynamic_point_light.gd" id="3_qvbwy"]
+[ext_resource type="Script" path="res://Systems/Scripts/dynamic_area_light.gd" id="4_e6kqh"]
+[ext_resource type="Script" path="res://Systems/Scripts/dynamic_lighting_demo_controller.gd" id="5_f5d7s"]
+
+[sub_resource type="Gradient" id="Gradient_1w1yx"]
+offsets = PackedFloat32Array(0, 0.245902, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.8, 0.8, 0.8, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_c70hh"]
+gradient = SubResource("Gradient_1w1yx")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_nxbv6"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.8, 0.8, 0.8, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_jklgf"]
+gradient = SubResource("Gradient_nxbv6")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[node name="DynamicLightingDemo" type="Node2D"]
+
+[node name="DynamicLightingSystem" type="Node" parent="."]
+script = ExtResource("1_dkgve")
+day_night_cycle_enabled = true
+day_length_minutes = 2.0
+dawn_color = Color(0.92, 0.6, 0.5, 1)
+night_color = Color(0.05, 0.05, 0.2, 1)
+lab_color = Color(0, 0.6, 1, 1)
+
+[node name="EnvironmentLight" type="CanvasModulate" parent="."]
+script = ExtResource("2_l7tgr")
+use_global_lighting = true
+scene_type = "indoors"
+time_of_day_effect = true
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = -566.0
+offset_top = -389.0
+offset_right = 1634.0
+offset_bottom = 761.0
+color = Color(0.0627451, 0.0705882, 0.129412, 1)
+
+[node name="FloorTiles" type="ColorRect" parent="."]
+offset_left = -400.0
+offset_top = -200.0
+offset_right = 1400.0
+offset_bottom = 600.0
+color = Color(0.141176, 0.156863, 0.211765, 1)
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="Wall1" type="ColorRect" parent="Walls"]
+offset_left = -400.0
+offset_top = -200.0
+offset_right = -360.0
+offset_bottom = 600.0
+color = Color(0.266667, 0.290196, 0.364706, 1)
+
+[node name="Wall2" type="ColorRect" parent="Walls"]
+offset_left = -400.0
+offset_top = -200.0
+offset_right = 1400.0
+offset_bottom = -160.0
+color = Color(0.266667, 0.290196, 0.364706, 1)
+
+[node name="Wall3" type="ColorRect" parent="Walls"]
+offset_left = 1360.0
+offset_top = -200.0
+offset_right = 1400.0
+offset_bottom = 600.0
+color = Color(0.266667, 0.290196, 0.364706, 1)
+
+[node name="Wall4" type="ColorRect" parent="Walls"]
+offset_left = -400.0
+offset_top = 560.0
+offset_right = 1400.0
+offset_bottom = 600.0
+color = Color(0.266667, 0.290196, 0.364706, 1)
+
+[node name="InnerWall1" type="ColorRect" parent="Walls"]
+offset_left = 400.0
+offset_top = -160.0
+offset_right = 440.0
+offset_bottom = 240.0
+color = Color(0.247059, 0.258824, 0.298039, 1)
+
+[node name="InnerWall2" type="ColorRect" parent="Walls"]
+offset_left = 400.0
+offset_top = 400.0
+offset_right = 440.0
+offset_bottom = 560.0
+color = Color(0.247059, 0.258824, 0.298039, 1)
+
+[node name="InnerWall3" type="ColorRect" parent="Walls"]
+offset_left = 800.0
+offset_top = 200.0
+offset_right = 1360.0
+offset_bottom = 240.0
+color = Color(0.247059, 0.258824, 0.298039, 1)
+
+[node name="Furniture" type="Node2D" parent="."]
+
+[node name="Table1" type="ColorRect" parent="Furniture"]
+offset_left = -200.0
+offset_top = 100.0
+offset_right = -100.0
+offset_bottom = 180.0
+color = Color(0.219608, 0.156863, 0.121569, 1)
+
+[node name="Table2" type="ColorRect" parent="Furniture"]
+offset_left = 600.0
+offset_top = 400.0
+offset_right = 800.0
+offset_bottom = 480.0
+color = Color(0.219608, 0.156863, 0.121569, 1)
+
+[node name="Table3" type="ColorRect" parent="Furniture"]
+offset_left = 1000.0
+offset_top = -100.0
+offset_right = 1300.0
+offset_bottom = 100.0
+color = Color(0.219608, 0.156863, 0.121569, 1)
+
+[node name="Barrel1" type="ColorRect" parent="Furniture"]
+offset_left = 100.0
+offset_top = 400.0
+offset_right = 140.0
+offset_bottom = 440.0
+color = Color(0.396078, 0.301961, 0.215686, 1)
+
+[node name="Barrel2" type="ColorRect" parent="Furniture"]
+offset_left = 160.0
+offset_top = 400.0
+offset_right = 200.0
+offset_bottom = 440.0
+color = Color(0.396078, 0.301961, 0.215686, 1)
+
+[node name="Barrel3" type="ColorRect" parent="Furniture"]
+offset_left = 220.0
+offset_top = 400.0
+offset_right = 260.0
+offset_bottom = 440.0
+color = Color(0.396078, 0.301961, 0.215686, 1)
+
+[node name="LightingLayers" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="LightingDemo" type="Label" parent="LightingLayers"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 390.0
+offset_bottom = 84.0
+theme_override_font_sizes/font_size = 24
+text = "Breaking Bad Dynamic Lighting Demo
+Press Space to cycle lighting states"
+
+[node name="TimeDisplay" type="Label" parent="LightingLayers"]
+offset_left = 20.0
+offset_top = 100.0
+offset_right = 390.0
+offset_bottom = 164.0
+theme_override_font_sizes/font_size = 18
+text = "Current Time: 08:00 AM
+Current Lighting: DAY"
+
+[node name="Instructions" type="Label" parent="LightingLayers"]
+offset_left = 20.0
+offset_top = 150.0
+offset_right = 390.0
+offset_bottom = 340.0
+theme_override_font_sizes/font_size = 16
+text = "Controls:
+T - Toggle Time Cycling
+1-5 - Set lighting states
+   1: Day
+   2: Night
+   3: Lab
+   4: Indoor Dim
+   5: Emergency
+F - Toggle Flickering Lights"
+
+[node name="Lights" type="Node2D" parent="."]
+
+[node name="MainLight" type="PointLight2D" parent="Lights"]
+position = Vector2(150, 150)
+color = Color(1, 0.901961, 0.788235, 1)
+energy = 1.2
+shadow_enabled = true
+shadow_color = Color(0, 0, 0, 0.501961)
+shadow_filter = 2
+shadow_filter_smooth = 4.0
+texture = SubResource("GradientTexture2D_c70hh")
+texture_scale = 4.0
+script = ExtResource("3_qvbwy")
+flicker_enabled = true
+flicker_type = "candle"
+flicker_intensity = 0.1
+flicker_speed = 1.0
+
+[node name="RoomLight" type="PointLight2D" parent="Lights"]
+position = Vector2(600, 100)
+color = Color(0.807843, 0.815686, 1, 1)
+energy = 1.5
+shadow_enabled = true
+shadow_color = Color(0, 0, 0, 0.501961)
+shadow_filter = 2
+shadow_filter_smooth = 4.0
+texture = SubResource("GradientTexture2D_c70hh")
+texture_scale = 4.0
+script = ExtResource("3_qvbwy")
+base_color = Color(0.807843, 0.815686, 1, 1)
+
+[node name="OfficeLight" type="PointLight2D" parent="Lights"]
+position = Vector2(900, 80)
+color = Color(0.858824, 0.921569, 1, 1)
+energy = 1.4
+shadow_enabled = true
+shadow_color = Color(0, 0, 0, 0.501961)
+shadow_filter = 1
+shadow_filter_smooth = 3.0
+texture = SubResource("GradientTexture2D_c70hh")
+texture_scale = 3.5
+script = ExtResource("3_qvbwy")
+base_color = Color(0.858824, 0.921569, 1, 1)
+flicker_enabled = true
+flicker_type = "fluorescent"
+flicker_intensity = 0.07
+flicker_speed = 1.2
+
+[node name="MethLabLight" type="PointLight2D" parent="Lights"]
+position = Vector2(1200, 400)
+color = Color(0, 0.784314, 1, 1)
+energy = 1.5
+shadow_enabled = true
+shadow_color = Color(0, 0, 0, 0.501961)
+shadow_filter = 2
+shadow_filter_smooth = 4.0
+texture = SubResource("GradientTexture2D_c70hh")
+texture_scale = 3.0
+script = ExtResource("3_qvbwy")
+base_color = Color(0, 0.784314, 1, 1)
+flicker_enabled = true
+flicker_type = "broken"
+flicker_intensity = 0.05
+flicker_speed = 0.8
+
+[node name="EmergencyLight" type="PointLight2D" parent="Lights"]
+position = Vector2(800, 400)
+color = Color(1, 0, 0, 1)
+energy = 0.0
+shadow_enabled = true
+shadow_color = Color(0, 0, 0, 0.501961)
+shadow_filter = 2
+shadow_filter_smooth = 4.0
+texture = SubResource("GradientTexture2D_c70hh")
+texture_scale = 2.5
+script = ExtResource("3_qvbwy")
+light_enabled = false
+base_color = Color(1, 0, 0, 1)
+flicker_enabled = true
+flicker_type = "pulse"
+flicker_intensity = 0.2
+flicker_speed = 2.0
+
+[node name="AreaLight" type="PointLight2D" parent="Lights"]
+position = Vector2(0, 0)
+energy = 0.4
+shadow_enabled = true
+shadow_color = Color(0, 0, 0, 0.501961)
+shadow_filter = 2
+shadow_filter_smooth = 5.0
+texture = SubResource("GradientTexture2D_jklgf")
+texture_scale = 5.0
+script = ExtResource("4_e6kqh")
+base_energy = 0.4
+animation_enabled = true
+animation_type = "breathe"
+animation_speed = 0.3
+animation_intensity = 0.1
+
+[node name="DemoController" type="Node" parent="."]
+script = ExtResource("5_f5d7s") 

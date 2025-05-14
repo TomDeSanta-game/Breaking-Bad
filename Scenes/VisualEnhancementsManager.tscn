@@ -1,0 +1,75 @@
+[gd_scene load_steps=8 format=3 uid="uid://bqvsd5xgj5d5r"]
+
+[ext_resource type="Script" path="res://Scripts/visual_effects_manager.gd" id="1_b5qa2"]
+[ext_resource type="Script" path="res://Scripts/parallax_background_manager.gd" id="2_vbqe8"]
+[ext_resource type="Script" path="res://Scripts/texture_variation_system.gd" id="3_d6axo"]
+[ext_resource type="Script" path="res://Scripts/sprite_rotation_smoother.gd" id="4_a7r1n"]
+[ext_resource type="Script" path="res://Scripts/subpixel_animator.gd" id="5_f7fhd"]
+[ext_resource type="Script" path="res://Scripts/adaptive_resolution_manager.gd" id="6_8stlb"]
+[ext_resource type="Shader" path="res://Resources/Shaders/ambient_occlusion.gdshader" id="7_6eyqb"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pu5gw"]
+shader = ExtResource("7_6eyqb")
+shader_parameter/enabled = true
+shader_parameter/intensity = 0.5
+shader_parameter/radius = 8.0
+shader_parameter/darken_corners = 0.5
+shader_parameter/corners_only = 0.0
+shader_parameter/falloff = 2.0
+shader_parameter/pixel_perfect = true
+
+[node name="VisualEnhancementsManager" type="Node"]
+
+[node name="VisualEffectsManager" type="Node" parent="."]
+script = ExtResource("1_b5qa2")
+
+[node name="ParallaxBackgroundManager" type="Node2D" parent="."]
+script = ExtResource("2_vbqe8")
+enabled = true
+default_strength = 1.0
+auto_scroll = false
+auto_scroll_speed = Vector2(20, 0)
+offset_scale = 1.0
+
+[node name="TextureVariationSystem" type="Node" parent="."]
+script = ExtResource("3_d6axo")
+variation_method = 0
+target_group = "tileable_sprites"
+enabled = true
+variation_strength = 0.3
+seed_value = 0
+
+[node name="SpriteRotationSmoother" type="Node" parent="."]
+script = ExtResource("4_a7r1n")
+enabled = true
+quality_level = 2
+preserve_pixel_art = true
+auto_adjust_scale = true
+rotation_only = true
+pixel_perfect_mode = true
+
+[node name="SubpixelAnimator" type="Node" parent="."]
+script = ExtResource("5_f7fhd")
+enabled = true
+animation_speed = 1.0
+amplitude = 0.2
+animation_type = "breathing"
+apply_to_shader = false
+shader_param_name = "offset"
+
+[node name="AdaptiveResolutionManager" type="Node" parent="."]
+script = ExtResource("6_8stlb")
+enabled = true
+default_scale = 1.0
+transition_speed = 2.0
+pixel_perfect = true
+affect_ui = false
+
+[node name="AmbientOcclusionEffect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_pu5gw")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2 

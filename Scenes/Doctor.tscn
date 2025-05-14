@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3 uid="uid://cj8ywdfymb41a"]
+
+[ext_resource type="Script" path="res://Scripts/Doctor/doctor.gd" id="1_d6ht5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i4whc"]
+size = Vector2(32, 48)
+
+[node name="Doctor" type="CharacterBody2D" groups=["NPC"]]
+script = ExtResource("1_d6ht5")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.203922, 0.411765, 0.796078, 1)
+polygon = PackedVector2Array(-16, -24, 16, -24, 16, 24, -16, 24)
+
+[node name="Head" type="Polygon2D" parent="."]
+position = Vector2(0, -32)
+color = Color(0.952941, 0.843137, 0.741176, 1)
+polygon = PackedVector2Array(-10, -10, 10, -10, 10, 10, -10, 10)
+
+[node name="LabCoat" type="Polygon2D" parent="."]
+color = Color(0.886275, 0.886275, 0.886275, 1)
+polygon = PackedVector2Array(-14, -20, 14, -20, 14, 22, -14, 22)
+
+[node name="CoatDetail" type="Polygon2D" parent="."]
+color = Color(0.207843, 0.207843, 0.207843, 1)
+polygon = PackedVector2Array(-2, -20, 2, -20, 2, 22, -2, 22)
+
+[node name="Shadow" type="Polygon2D" parent="."]
+z_index = -1
+position = Vector2(2, 28)
+color = Color(0, 0, 0, 0.301961)
+polygon = PackedVector2Array(-18, -4, 18, -4, 21, 0, 18, 4, -18, 4, -21, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_i4whc") 

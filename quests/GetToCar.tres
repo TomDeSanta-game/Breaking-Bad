@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Quest" load_steps=2 format=3 uid="uid://ckvxus1hip2od"]
+
+[ext_resource type="Script" uid="uid://d20o527a4y4ee" path="res://addons/quest_system/quest_resource.gd" id="1_5pk0s"]
+
+[resource]
+script = ExtResource("1_5pk0s")
+id = 0
+quest_name = "GetToCar"
+quest_description = ""
+quest_objective = "Get To Car"
+metadata/_custom_type_script = "uid://d20o527a4y4ee"

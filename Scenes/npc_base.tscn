@@ -1,0 +1,7 @@
+[gd_scene load_steps=0 format=3 uid="uid://dlabqmjvwx40q"]
+
+[node name="NpcBase" type="CharacterBody2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
