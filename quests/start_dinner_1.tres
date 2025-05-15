@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Quest" load_steps=2 format=3 uid="uid://b6nob2wgvunr7"]
+
+[ext_resource type="Script" uid="uid://d20o527a4y4ee" path="res://addons/quest_system/quest_resource.gd" id="1_3jeid"]
+
+[resource]
+script = ExtResource("1_3jeid")
+id = 0
+quest_name = "Start Dinner 1"
+quest_description = "Have dinner with the family."
+quest_objective = "Have dinner with the family."
+metadata/_custom_type_script = "uid://d20o527a4y4ee"

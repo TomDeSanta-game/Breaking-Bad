@@ -16,13 +16,21 @@ func _ready() -> void:
 	
 	if player.has_method("hide_ui"):
 		player.hide_ui(true)
-	
-	# Temporarily comment out Dialogic to see if it works without it
-	#Dialogic.timeline_ended.connect(on_dialog_timeline_ended)
-	#register_console_commands()
-	#car.body_entered.connect(_on_car_body_entered)
+
 	await get_tree().create_timer(1.0).timeout
+
+	var quest_resource = load("res://quests/start_dinner_1.tres")
+	QuestSystem.start_quest(quest_resource)
 	
+	player.get_node("HUD").visible = true
+	var hud = player.get_node("HUD")
+	var objective_label = hud.get_node("ObjectiveLabel")
+	if objective_label:
+		objective_label.start_quest(
+			quest_resource.quest_name,
+			quest_resource.quest_objective
+		)
+
 	# Enable player control instead of waiting for dialog to end
 	player.set_physics_process(true)
 	player.set_process_unhandled_input(true)

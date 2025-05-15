@@ -1,8 +1,9 @@
-[gd_scene load_steps=25 format=3 uid="uid://dextyluhrr7ge"]
+[gd_scene load_steps=26 format=3 uid="uid://dextyluhrr7ge"]
 
 [ext_resource type="Script" uid="uid://bvi2vymw0bsqb" path="res://Scripts/player.gd" id="1_k2g5q"]
 [ext_resource type="Texture2D" uid="uid://dsvvit8k8agxd" path="res://assets/Prototype_Character/Prototype_Character.png" id="2_tryav"]
-[ext_resource type="PackedScene" path="res://UI/Scenes/hud.tscn" id="5_g2khi"]
+[ext_resource type="PackedScene" uid="uid://chohyutjw50e8" path="res://Scenes/hud.tscn" id="5_g2khi"]
+[ext_resource type="PackedScene" uid="uid://c2y7oqwuakp0j" path="res://Scenes/EnhancedCamera.tscn" id="5_lqtm6"]
 [ext_resource type="Script" uid="uid://877tixw18jq2" path="res://Scripts/notification_manager.gd" id="17_ckqmb"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2fnmh"]
@@ -191,8 +192,15 @@ target_position = Vector2(50, 0)
 collision_mask = 8
 collide_with_areas = true
 
+[node name="EnhancedCamera" parent="." instance=ExtResource("5_lqtm6")]
+zoom = Vector2(2, 2)
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_horizontal_offset = 0.15
+drag_vertical_offset = 0.15
+target = NodePath("..")
+
 [node name="HUD" parent="." instance=ExtResource("5_g2khi")]
-visible = false
 
 [node name="NotificationManager" type="Control" parent="."]
 layout_mode = 3

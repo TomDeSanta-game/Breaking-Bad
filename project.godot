@@ -35,6 +35,7 @@ VisualEnhancements="*res://Scenes/VisualEnhancementsManager.tscn"
 InputInitializer="*res://Scripts/input_initializer.gd"
 TimeEffectsManager="*res://Scenes/TimeEffectsManager.tscn"
 WhiteScreenFix="*res://Scripts/bypass_white_screen.gd"
+GameState="*res://Scripts/game_state.gd"
 
 [dialogic]
 

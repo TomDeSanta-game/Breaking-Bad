@@ -1,65 +1,41 @@
 extends CharacterBody2D
 
-@export var max_speed: float = 100.0
-@export var acceleration: float = 1000.0
-@export var friction: float = 1000.0
+@export var speed: float = 160.0
+@export var acceleration: float = 2000.0
+@export var friction: float = 2000.0
 @export var sprint_multiplier: float = 1.5
+@export var dash_power: float = 600.0
+@export var dash_duration: float = 0.15
+@export var dash_cooldown: float = 0.8
 @export var starting_health: float = 100.0
 @export var damage_cooldown: float = 1.0
 @export var max_heat_level: float = 100.0
 @export var heat_decay_rate: float = 0.5
-@export var momentum_strength: float = 0.3
-@export var acceleration_curve: float = 0.3
-@export var deceleration_curve: float = 0.2
-@export var turn_responsiveness: float = 1.2
-@export var pixel_snapping: bool = true
-@export var snap_threshold: float = 3.0
-@export var dash_duration: float = 0.2
-@export var dash_cooldown: float = 1.5
-@export var dash_strength: float = 2.5
-@export var max_stamina: float = 100.0
-@export var stamina_decay_rate: float = 15.0
-@export var stamina_recovery_rate: float = 10.0
-@export var stamina_sprint_threshold: float = 10.0
-@export var slow_motion_duration: float = 4.0
-@export var slow_motion_cooldown: float = 10.0
-@export var slow_motion_strength: float = 0.3
-@export var slow_motion_stamina_cost: float = 30.0
 @export var interaction_distance: float = 50.0
 @export_flags_2d_physics var interaction_mask: int = 0
+@export var shadow_offset: Vector2 = Vector2(0, 8)
+@export var shadow_alpha: float = 0.5
+@export var use_player_camera: bool = false
+@export var camera_offset: Vector2 = Vector2.ZERO
 
 var current_health: float = starting_health
 var can_be_damaged: bool = true
 var damage_timer: Timer = null
+var dash_timer: Timer = null
+var dash_cooldown_timer: Timer = null
 
-var desired_velocity: Vector2 = Vector2.ZERO
-var momentum: Vector2 = Vector2.ZERO
 var direction: Vector2 = Vector2.ZERO
 var last_direction: Vector2 = Vector2.RIGHT
 var is_sprinting: bool = false
-var active_speed: float = 0.0
-var speed_modifier: float = 1.0
+var is_dashing: bool = false
+var can_dash: bool = true
 
 var heat_level: float = 0.0
-var current_stamina: float = max_stamina
-var can_sprint: bool = true
 
 var is_hiding: bool = false
 var in_interaction_area: bool = false
 var current_interactable: Node2D = null
 var nearest_interactables: Array[Node2D] = []
-
-var can_dash: bool = true
-var is_dashing: bool = false
-var dash_timer: float = 0.0
-var dash_cooldown_timer: float = 0.0
-var dash_direction: Vector2 = Vector2.ZERO
-
-var slow_motion_active: bool = false
-var slow_motion_timer: float = 0.0
-var slow_motion_cooldown_timer: float = 0.0
-var can_use_slow_motion: bool = true
-var slow_motion_tween: Tween = null
 
 var evidence_items: Array[Dictionary] = []
 var body_parts_damaged: Dictionary = {
@@ -75,7 +51,6 @@ enum PlayerState {
 	IDLE,
 	WALKING,
 	RUNNING,
-	DASHING,
 	HIDING,
 	INTERACTING,
 	INJURED,
@@ -89,39 +64,86 @@ var current_state: PlayerState = PlayerState.IDLE
 @onready var interaction_ray: RayCast2D = $InteractionRay
 @onready var hud: CanvasLayer = $HUD
 @onready var heat_bar: ProgressBar = $HUD/MarginContainer/VBoxContainer/HeatBar
-@onready var stam_bar: ProgressBar = $HUD/MarginContainer/VBoxContainer/StaminaBar
+@onready var shadow_sprite: Sprite2D = null
+@onready var camera: Camera2D = null
 
 func _ready() -> void:
 	hud.show()
-
 	current_health = starting_health
-	current_stamina = max_stamina
-	active_speed = max_speed
 	
+	setup_damage_timer()
+	setup_dash_timers()
+	setup_interaction_ray()
+	setup_shadow()
+	
+	if use_player_camera and not has_node("Camera2D"):
+		setup_camera()
+	
+	SignalBus.health_changed.emit(current_health, starting_health)
+	SignalBus.heat_changed.emit(heat_level, max_heat_level)
+	set_state(PlayerState.IDLE)
+
+func setup_damage_timer() -> void:
 	damage_timer = Timer.new()
 	damage_timer.one_shot = true
 	damage_timer.wait_time = damage_cooldown
 	damage_timer.timeout.connect(_on_damage_timer_timeout)
 	add_child(damage_timer)
+
+func setup_dash_timers() -> void:
+	dash_timer = Timer.new()
+	dash_timer.one_shot = true
+	dash_timer.wait_time = dash_duration
+	dash_timer.timeout.connect(_on_dash_timer_timeout)
+	add_child(dash_timer)
 	
+	dash_cooldown_timer = Timer.new()
+	dash_cooldown_timer.one_shot = true
+	dash_cooldown_timer.wait_time = dash_cooldown
+	dash_cooldown_timer.timeout.connect(_on_dash_cooldown_timeout)
+	add_child(dash_cooldown_timer)
+
+func setup_interaction_ray() -> void:
 	if interaction_ray:
 		interaction_ray.collision_mask = interaction_mask
 		interaction_ray.target_position = Vector2(interaction_distance, 0)
-	
-	SignalBus.health_changed.emit(current_health, starting_health)
-	SignalBus.heat_changed.emit(heat_level, max_heat_level)
-	SignalBus.stamina_changed.emit(current_stamina, max_stamina)
-	set_state(PlayerState.IDLE)
+
+func setup_shadow() -> void:
+	var shadow_texture = load("res://assets/Extra/Shadow.png")
+	if shadow_texture:
+		shadow_sprite = Sprite2D.new()
+		shadow_sprite.name = "Shadow"
+		shadow_sprite.texture = shadow_texture
+		shadow_sprite.modulate = Color(0, 0, 0, shadow_alpha)
+		shadow_sprite.z_index = -1
+		add_child(shadow_sprite)
+		shadow_sprite.position = shadow_offset
+	else:
+		Log.warn("Shadow texture not found. Player shadow disabled.")
+
+func setup_camera() -> void:
+	camera = Camera2D.new()
+	camera.name = "PlayerCamera"
+	camera.enabled = true
+	camera.position_smoothing_enabled = true
+	camera.position_smoothing_speed = 7.0
+	camera.drag_horizontal_enabled = true
+	camera.drag_vertical_enabled = true
+	camera.drag_horizontal_offset = 0.05
+	camera.drag_vertical_offset = 0.05
+	camera.offset = camera_offset
+	add_child(camera)
 
 func _physics_process(delta: float) -> void:
 	handle_input()
-	handle_dash(delta)
-	handle_slow_motion(delta)
 	handle_movement(delta)
-	handle_stamina(delta)
 	update_interaction_ray()
-	apply_pixel_perfect_movement()
 	handle_animation()
+	update_shadow()
+	
+	if camera and use_player_camera:
+		update_camera(delta)
+		
 	move_and_slide()
 	
 	if heat_level > 0:
@@ -130,17 +152,130 @@ func _physics_process(delta: float) -> void:
 	update_damaged_body_parts(delta)
 
 func handle_input() -> void:
-	direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down").normalized()
-	is_sprinting = Input.is_action_pressed("Sprint") and can_sprint
+	var x_input = Input.get_axis("ui_left", "ui_right")
+	var y_input = Input.get_axis("ui_up", "ui_down")
 	
-	if Input.is_action_just_pressed("slow_motion") and can_use_slow_motion and not slow_motion_active and current_stamina >= slow_motion_stamina_cost:
-		activate_slow_motion()
+	direction = Vector2(x_input, y_input)
+	if direction.length() > 1.0:
+		direction = direction.normalized()
+	
+	is_sprinting = Input.is_action_pressed("Sprint")
+	
+	if Input.is_action_just_pressed("ui_accept") and can_dash and direction.length() > 0:
+		start_dash()
 	
 	if Input.is_action_just_pressed("Interact"):
-		if can_dash and not is_dashing:
-			initiate_dash()
+		handle_interaction()
+
+func handle_movement(delta: float) -> void:
+	var target_speed = speed
+	
+	if is_dashing:
+		return
+		
+	if is_sprinting:
+		target_speed *= sprint_multiplier
+	
+	var target_velocity = direction * target_speed
+	
+	if direction.length() > 0:
+		velocity = velocity.move_toward(target_velocity, acceleration * delta)
+		last_direction = direction.normalized()
+		
+		if is_sprinting and current_state != PlayerState.RUNNING:
+			set_state(PlayerState.RUNNING)
+		elif not is_sprinting and current_state != PlayerState.WALKING:
+			set_state(PlayerState.WALKING)
+	else:
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+		
+		if velocity.length() < 5 and current_state != PlayerState.INTERACTING and current_state != PlayerState.HIDING and current_state != PlayerState.INJURED:
+			set_state(PlayerState.IDLE)
+
+func start_dash() -> void:
+	if is_dashing or not can_dash:
+		return
+		
+	is_dashing = true
+	can_dash = false
+	
+	var dash_direction = direction.normalized()
+	if dash_direction.length() < 0.1:
+		dash_direction = last_direction
+		
+	velocity = dash_direction * dash_power
+	
+	dash_timer.start()
+	dash_cooldown_timer.start()
+	
+	if shadow_sprite:
+		var tween = create_tween()
+		tween.tween_property(shadow_sprite, "scale", Vector2(1.5, 0.7), dash_duration * 0.5)
+		tween.tween_property(shadow_sprite, "scale", Vector2(1.0, 1.0), dash_duration * 0.5)
+		
+	if camera:
+		camera.offset += dash_direction * 20.0
+
+func _on_dash_timer_timeout() -> void:
+	is_dashing = false
+
+func _on_dash_cooldown_timeout() -> void:
+	can_dash = true
+
+func handle_animation() -> void:
+	if not sprite:
+		return
+	
+	var animation_prefix = ""
+	
+	if abs(direction.y) > abs(direction.x) * 1.2:
+		if direction.y < 0:
+			animation_prefix = "Up"
 		else:
-			handle_interaction()
+			animation_prefix = "Down"
+	else:
+		animation_prefix = "Right"
+		
+		if velocity.x < 0 or (velocity.length() < 10 and last_direction.x < 0):
+			sprite.flip_h = true
+		else:
+			sprite.flip_h = false
+	
+	var state_suffix = "_Idle"
+	if is_dashing:
+		state_suffix = "_Run"
+		sprite.speed_scale = 2.0
+	elif velocity.length() > 10:
+		state_suffix = "_Run"
+		
+		var animation_speed = 1.0
+		if is_sprinting:
+			animation_speed = 1.6
+		else:
+			animation_speed = 1.2
+			
+		sprite.speed_scale = animation_speed
+	else:
+		sprite.speed_scale = 1.0
+	
+	sprite.play(animation_prefix + state_suffix)
+
+func update_shadow() -> void:
+	if shadow_sprite:
+		if not is_dashing:
+			var movement_factor = min(1.0, velocity.length() / 50.0)
+			shadow_sprite.scale = Vector2(1.0, 1.0) * (1.0 + movement_factor * 0.2)
+			shadow_sprite.modulate.a = shadow_alpha * (1.0 - movement_factor * 0.3)
+
+func update_camera(delta: float) -> void:
+	if camera:
+		var look_direction = direction.normalized() * 20.0
+		var target_offset = camera_offset + look_direction
+		
+		if is_dashing:
+			camera.offset = camera.offset.lerp(target_offset, delta * 16.0)
+		else:
+			camera.offset = camera.offset.lerp(target_offset, delta * 8.0)
 
 func update_interaction_ray() -> void:
 	if not interaction_ray:
@@ -273,178 +408,11 @@ func apply_injury_effects(body_part: String) -> void:
 				SignalBus.threshold_crossed.emit("head_injury", "above", 0.3, severity)
 		"left_leg", "right_leg":
 			if severity > 0.5:
-				max_speed = max(max_speed * 0.6, 40.0)
+				speed = max(speed * 0.6, 40.0)
 				SignalBus.threshold_crossed.emit("leg_injury", "above", 0.5, severity)
 			elif severity > 0.2:
-				max_speed = max(max_speed * 0.8, 60.0)
+				speed = max(speed * 0.8, 60.0)
 				SignalBus.threshold_crossed.emit("leg_injury", "above", 0.2, severity)
-		"left_arm", "right_arm":
-			if severity > 0.5:
-				acceleration = max(acceleration * 0.7, 500.0)
-				SignalBus.threshold_crossed.emit("arm_injury", "above", 0.5, severity)
-			elif severity > 0.2:
-				acceleration = max(acceleration * 0.85, 700.0)
-				SignalBus.threshold_crossed.emit("arm_injury", "above", 0.2, severity)
-
-func handle_stamina(delta: float) -> void:
-	if is_sprinting and direction.length() > 0.1:
-		current_stamina = max(0.0, current_stamina - stamina_decay_rate * delta)
-		if current_stamina <= stamina_sprint_threshold:
-			can_sprint = false
-			SignalBus.threshold_crossed.emit("stamina", "below", stamina_sprint_threshold, current_stamina)
-	else:
-		current_stamina = min(max_stamina, current_stamina + stamina_recovery_rate * delta)
-		if current_stamina > stamina_sprint_threshold and not can_sprint:
-			can_sprint = true
-			SignalBus.threshold_crossed.emit("stamina", "above", stamina_sprint_threshold, current_stamina)
-	
-	SignalBus.stamina_changed.emit(current_stamina, max_stamina)
-
-func handle_slow_motion(delta: float) -> void:
-	if slow_motion_active:
-		slow_motion_timer -= delta
-		if slow_motion_timer <= 0:
-			deactivate_slow_motion()
-	
-	if slow_motion_cooldown_timer > 0:
-		slow_motion_cooldown_timer -= delta
-		if slow_motion_cooldown_timer <= 0:
-			can_use_slow_motion = true
-
-func activate_slow_motion() -> void:
-	if slow_motion_tween:
-		slow_motion_tween.kill()
-	
-	slow_motion_active = true
-	can_use_slow_motion = false
-	slow_motion_timer = slow_motion_duration
-	current_stamina -= slow_motion_stamina_cost
-	SignalBus.stamina_changed.emit(current_stamina, max_stamina)
-	
-	slow_motion_tween = create_tween()
-	slow_motion_tween.set_ease(Tween.EASE_OUT)
-	slow_motion_tween.set_trans(Tween.TRANS_SINE)
-	slow_motion_tween.tween_property(Engine, "time_scale", slow_motion_strength, 0.2)
-	
-	SignalBus.time_effect_started.emit("slow_motion", slow_motion_strength)
-	SignalBus.camera_effect_started.emit("slow_motion_start")
-
-func deactivate_slow_motion() -> void:
-	if slow_motion_tween:
-		slow_motion_tween.kill()
-	
-	slow_motion_active = false
-	slow_motion_cooldown_timer = slow_motion_cooldown
-	
-	slow_motion_tween = create_tween()
-	slow_motion_tween.set_ease(Tween.EASE_IN)
-	slow_motion_tween.set_trans(Tween.TRANS_SINE)
-	slow_motion_tween.tween_property(Engine, "time_scale", 1.0, 0.2)
-	
-	SignalBus.time_effect_ended.emit("slow_motion")
-	SignalBus.camera_effect_started.emit("slow_motion_end")
-
-func handle_dash(delta: float) -> void:
-	if is_dashing:
-		dash_timer -= delta
-		if dash_timer <= 0:
-			is_dashing = false
-			speed_modifier = 1.0
-			set_state(calculate_state())
-	
-	if dash_cooldown_timer > 0:
-		dash_cooldown_timer -= delta
-		if dash_cooldown_timer <= 0:
-			can_dash = true
-
-func initiate_dash() -> void:
-	is_dashing = true
-	can_dash = false
-	dash_timer = dash_duration
-	dash_cooldown_timer = dash_cooldown
-	
-	dash_direction = direction if direction.length() > 0.1 else last_direction
-	speed_modifier = dash_strength
-	
-	set_state(PlayerState.DASHING)
-	SignalBus.vfx_started.emit("dash", global_position)
-	SignalBus.camera_effect_started.emit("dash_shake")
-
-func handle_movement(delta: float) -> void:
-	if direction.length() > 0.1:
-		last_direction = direction
-	
-	active_speed = max_speed * ((sprint_multiplier if is_sprinting else 1.0) * speed_modifier)
-	
-	if is_dashing:
-		desired_velocity = dash_direction * active_speed
-	else:
-		desired_velocity = direction * active_speed
-	
-	if direction.length() > 0.1:
-		var acceleration_weight = turn_responsiveness
-		
-		if direction.dot(velocity.normalized()) < -0.5 and velocity.length() > max_speed * 0.8:
-			acceleration_weight *= 2.0
-		
-		velocity = velocity.lerp(desired_velocity, acceleration_curve * acceleration_weight * delta * acceleration / max_speed)
-		
-		momentum = momentum.lerp(direction * momentum_strength, 0.1)
-		
-		if not is_dashing:
-			if is_sprinting and current_state != PlayerState.RUNNING:
-				set_state(PlayerState.RUNNING)
-			elif not is_sprinting and current_state != PlayerState.WALKING:
-				set_state(PlayerState.WALKING)
-	else:
-		if velocity.length() > 10.0:
-			velocity = velocity.lerp(Vector2.ZERO, deceleration_curve * delta * friction / max_speed)
-		else:
-			velocity = Vector2.ZERO
-			momentum = momentum.lerp(Vector2.ZERO, 0.2)
-			
-			if current_state != PlayerState.INTERACTING and current_state != PlayerState.HIDING and current_state != PlayerState.INJURED:
-				set_state(PlayerState.IDLE)
-	
-	if not is_dashing:
-		velocity += momentum * max_speed
-
-func apply_pixel_perfect_movement() -> void:
-	if pixel_snapping and velocity.length() < max_speed * 0.3:
-		var pixel_size = 1.0
-		
-		var target_position = global_position + velocity
-		var snapped_position = Vector2(
-			round(target_position.x / pixel_size) * pixel_size,
-			round(target_position.y / pixel_size) * pixel_size
-		)
-		
-		if target_position.distance_to(snapped_position) < snap_threshold:
-			velocity = (snapped_position - global_position) * 0.8
-
-func handle_animation() -> void:
-	if not sprite:
-		return
-	
-	var direction_prefix = "Right"
-	if abs(direction.y) > abs(direction.x) and direction.y < 0:
-		direction_prefix = "Up"
-	elif abs(direction.y) > abs(direction.x) and direction.y > 0:
-		direction_prefix = "Down"
-	
-	if is_dashing:
-		sprite.play(direction_prefix + "_Run")
-		sprite.speed_scale = 1.5
-	elif velocity.length() > max_speed * 0.1:
-		var speed_percent = velocity.length() / max_speed
-		sprite.play(direction_prefix + "_Run")
-		sprite.speed_scale = lerp(0.8, 1.5, speed_percent)
-	else:
-		sprite.play(direction_prefix + "_Idle")
-		sprite.speed_scale = 1.0
-	
-	if velocity.x != 0:
-		sprite.flip_h = velocity.x < 0
 
 func take_damage(damage_amount: float) -> void:
 	if not can_be_damaged or current_health <= 0.0:
@@ -467,9 +435,6 @@ func die() -> void:
 	set_physics_process(false)
 	set_process_input(false)
 	set_state(PlayerState.DEAD)
-	
-	if slow_motion_active:
-		deactivate_slow_motion()
 	
 	SignalBus.player_died.emit()
 
@@ -543,7 +508,6 @@ func set_state(new_state: PlayerState) -> void:
 		PlayerState.IDLE: state_name = "idle"
 		PlayerState.WALKING: state_name = "walking"
 		PlayerState.RUNNING: state_name = "running"
-		PlayerState.DASHING: state_name = "dashing"
 		PlayerState.HIDING: state_name = "hiding"
 		PlayerState.INTERACTING: state_name = "interacting"
 		PlayerState.INJURED: state_name = "injured"
@@ -558,9 +522,9 @@ func calculate_state() -> PlayerState:
 		return PlayerState.HIDING
 	elif has_severe_injuries():
 		return PlayerState.INJURED
-	elif velocity.length() > max_speed * 0.8 and is_sprinting:
+	elif velocity.length() > speed * 0.8 and is_sprinting:
 		return PlayerState.RUNNING
-	elif velocity.length() > max_speed * 0.1:
+	elif velocity.length() > speed * 0.1:
 		return PlayerState.WALKING
 	else:
 		return PlayerState.IDLE

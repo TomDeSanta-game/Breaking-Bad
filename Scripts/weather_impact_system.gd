@@ -164,11 +164,7 @@ func process_weather_transition(delta):
 		current_intensity = target_intensity
 		transitioning = false
 	else:
-		var _weather_props = WEATHER_PROPERTIES[current_weather]
-		var _target_props = WEATHER_PROPERTIES[target_weather]
-		
-		var lerp_intensity = lerp(current_intensity, target_intensity, progress)
-		current_intensity = lerp_intensity
+		current_intensity = lerp(current_intensity, target_intensity, progress)
 	
 	apply_weather_effects()
 
@@ -204,9 +200,13 @@ func update_visual_effects():
 	
 	if current_weather == WeatherType.FOG or current_weather == WeatherType.DUST_STORM:
 		SignalBus.camera_effect_started.emit("fog_effect")
+		var fog_color = Color(0.8, 0.8, 0.9, 0.5)
+		if current_weather == WeatherType.DUST_STORM:
+			fog_color = Color(0.8, 0.7, 0.5, 0.6)
+			
 		var fog_data = {
 			"density": 1.0 - visibility,
-			"color": Color(0.8, 0.8, 0.9, 0.5) if current_weather == WeatherType.FOG else Color(0.8, 0.7, 0.5, 0.6)
+			"color": fog_color
 		}
 		SignalBus.vfx_started.emit("fog", fog_data)
 	else:
@@ -223,9 +223,13 @@ func update_visual_effects():
 		SignalBus.vfx_completed.emit("rain", {})
 	
 	if current_weather == WeatherType.WINDY or current_weather == WeatherType.DUST_STORM:
+		var wind_strength = current_intensity
+		if current_weather == WeatherType.DUST_STORM:
+			wind_strength = current_intensity * 1.5
+			
 		var wind_data = {
 			"direction": Vector2(1.0, 0.2).normalized(),
-			"strength": current_intensity * (1.5 if current_weather == WeatherType.DUST_STORM else 1.0)
+			"strength": wind_strength
 		}
 		SignalBus.vfx_started.emit("wind", wind_data)
 		

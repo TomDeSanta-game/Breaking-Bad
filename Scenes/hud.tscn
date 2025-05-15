@@ -1,35 +1,91 @@
-[gd_scene load_steps=3 format=3 uid="uid://chohyutjw50e8"]
+[gd_scene load_steps=7 format=3 uid="uid://chohyutjw50e8"]
 
-[ext_resource type="PackedScene" uid="uid://cfwmq1d1uy5o4" path="res://UI/Scenes/StaminaBar/stamina_bar.tscn" id="1_a3vut"]
-[ext_resource type="PackedScene" uid="uid://dstx67q8t1okq" path="res://UI/Scenes/HeatBar/heat_bar.tscn" id="2_nw5cl"]
+[ext_resource type="PackedScene" uid="uid://cfwmq1d1uy5o4" path="res://Scenes/stamina_bar.tscn" id="1_a3vut"]
+[ext_resource type="PackedScene" uid="uid://dstx67q8t1okq" path="res://Scenes/heat_bar.tscn" id="2_nw5cl"]
+[ext_resource type="Script" uid="uid://bmmcaknrfd3a8" path="res://Scripts/objective_label.gd" id="3_1c3gd"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fpkrg"]
+bg_color = Color(0.0862745, 0.0862745, 0.0862745, 0.784314)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.8, 0.8, 0.196078)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8tpdk"]
+bg_color = Color(0.223529, 0.223529, 0.223529, 0.784314)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.392157)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+anti_aliasing = false
+
+[sub_resource type="LabelSettings" id="LabelSettings_pye3h"]
+font_size = 12
+shadow_size = 0
+shadow_color = Color(0, 0, 0, 0.392157)
 
 [node name="HUD" type="CanvasLayer"]
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+[node name="ObjectiveLabel" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("3_1c3gd")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-mouse_filter = 2
-theme_override_constants/separation = 10
+[node name="ObjectivePanel" type="PanelContainer" parent="ObjectiveLabel"]
+layout_mode = 0
+offset_right = 220.0
+offset_bottom = 50.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_fpkrg")
 
-[node name="StaminaBar" parent="MarginContainer/VBoxContainer" instance=ExtResource("1_a3vut")]
+[node name="CompletionPanel" type="PanelContainer" parent="ObjectiveLabel/ObjectivePanel"]
+visible = false
 layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_8tpdk")
 
-[node name="HeatBar" parent="MarginContainer/VBoxContainer" instance=ExtResource("2_nw5cl")]
+[node name="MarginContainer" type="MarginContainer" parent="ObjectiveLabel/ObjectivePanel"]
 layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0 
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ObjectiveLabel/ObjectivePanel/MarginContainer"]
+layout_mode = 2
+
+[node name="HeaderLabel" type="Label" parent="ObjectiveLabel/ObjectivePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "OBJECTIVE"
+label_settings = SubResource("LabelSettings_pye3h")
+horizontal_alignment = 1
+
+[node name="QuestText" type="Label" parent="ObjectiveLabel/ObjectivePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Find a way to make money"
+autowrap_mode = 3
+
+[node name="StaminaBar" parent="." instance=ExtResource("1_a3vut")]
+offset_left = 20.0
+offset_top = 100.0
+offset_right = 220.0
+offset_bottom = 125.0
+
+[node name="HeatBar" parent="." instance=ExtResource("2_nw5cl")]
+offset_left = 20.0
+offset_top = 130.0
+offset_right = 220.0
+offset_bottom = 155.0

@@ -61,6 +61,8 @@ var crt_brightness: float = 1.2
 var contrast_enabled: bool = false
 var contrast_amount: float = 1.1
 
+var overlay_color: Color = Color(0.0, 0.0, 0.0, 0.0)
+
 func _ready():
 	call_deferred("setup_post_processing")
 	
@@ -83,7 +85,6 @@ func _ready():
 	heat_noise_texture = noise_texture
 
 func setup_post_processing():
-	# Skip post-processing initialization completely
 	print("Post-processing permanently disabled")
 	is_initialized = false
 	enabled = false
@@ -92,7 +93,6 @@ func setup_post_processing():
 	return
 
 func update_shader_parameters():
-	# Skip updating shader parameters since post-processing is disabled
 	if not is_initialized or not post_process_material or not enabled:
 		return
 	
@@ -149,7 +149,6 @@ func update_shader_parameters():
 	post_process_material.set_shader_parameter("contrast_enabled", contrast_enabled)
 	post_process_material.set_shader_parameter("contrast_amount", contrast_amount)
 	
-	# Add temperature parameter
 	post_process_material.set_shader_parameter("temperature", 0.0)
 
 func set_vignette(intensity: float, opacity: float, color: Color = Color(0.0, 0.0, 0.0, 1.0)):
@@ -248,96 +247,209 @@ func create_pulse_effect(duration: float = 0.5, intensity: float = 0.8):
 	var original_vignette = vignette_intensity
 	var original_aberration = aberration_amount
 	
-	set_vignette(intensity, vignette_opacity, vignette_color)
-	set_chromatic_aberration(aberration_amount * 2.0)
+	set_vignette(original_vignette + 0.3 * intensity, 0.7 * intensity)
+	set_chromatic_aberration(0.5 * intensity)
 	
 	var tween = create_tween()
-	tween.tween_property(self, "vignette_intensity", original_vignette, duration)
-	tween.parallel().tween_property(self, "aberration_amount", original_aberration, duration)
-	tween.tween_callback(Callable(self, "update_shader_parameters"))
+	tween.tween_method(set_vignette.bind(vignette_opacity, vignette_color), 
+		vignette_intensity, original_vignette, duration)
+	tween.parallel().tween_method(set_chromatic_aberration.bind(true),
+		aberration_amount, original_aberration, duration)
 
-func _on_tension_level_changed(level: float):
-	var target_vignette = lerp(0.3, 0.6, level)
-	var target_aberration = lerp(0.3, 1.0, level)
-	var target_grain = lerp(0.05, 0.2, level)
-	var target_bloom = lerp(0.0, 0.4, level)
-	
-	var tween = create_tween()
-	tween.tween_property(self, "vignette_intensity", target_vignette, 1.0)
-	tween.parallel().tween_property(self, "aberration_amount", target_aberration, 1.0)
-	tween.parallel().tween_property(self, "grain_amount", target_grain, 1.0)
-	tween.parallel().tween_property(self, "bloom_intensity", target_bloom, 1.0)
-	tween.tween_callback(Callable(self, "update_shader_parameters"))
-	
-	if level > 0.6 and !bloom_enabled:
-		set_bloom(true, target_bloom, 0.6)
+func create_shake_effect(duration: float = 0.3, intensity: float = 1.0):
+	SignalBus.camera_effect_requested.emit("shake", intensity, duration)
 
-func _on_player_health_changed(health: float, max_health: float):
-	var health_ratio = health / max_health
+func _on_tension_level_changed(level_name: String, _previous: String):
+	if not is_initialized:
+		return
 	
-	if health_ratio < 0.5:
-		var intensity = lerp(0.4, 0.8, 1.0 - health_ratio * 2.0)
-		var opacity = lerp(0.5, 0.7, 1.0 - health_ratio * 2.0)
-		var color = Color(0.5, 0.0, 0.0, lerp(0.2, 0.8, 1.0 - health_ratio * 2.0))
+	match level_name:
+		"MINIMAL":
+			set_vignette(0.2, 0.4)
+			set_film_grain(0.03, 1.0, 1.0)
+			set_chromatic_aberration(0.0, false)
+			
+		"LOW":
+			set_vignette(0.3, 0.5)
+			set_film_grain(0.05, 1.0, 1.0)
+			set_chromatic_aberration(0.0, false)
+			
+		"MEDIUM":
+			set_vignette(0.4, 0.6, Color(0.1, 0.0, 0.0, 1.0))
+			set_film_grain(0.07, 1.2, 1.5)
+			set_chromatic_aberration(0.2, true)
+			create_pulse_effect(0.8, 0.3)
+			
+		"HIGH":
+			set_vignette(0.5, 0.7, Color(0.2, 0.0, 0.0, 1.0))
+			set_film_grain(0.1, 1.5, 2.0)
+			set_chromatic_aberration(0.4, true)
+			create_pulse_effect(0.6, 0.5)
+			
+		"CRITICAL":
+			set_vignette(0.7, 0.8, Color(0.4, 0.0, 0.0, 1.0))
+			set_film_grain(0.15, 2.0, 3.0)
+			set_chromatic_aberration(0.6, true)
+			set_contrast_adjustment(true, 1.2)
+			create_pulse_effect(0.4, 0.7)
+			create_shake_effect(0.3, 0.5)
+
+func _on_player_health_changed(current_health: float, max_health: float):
+	if not is_initialized:
+		return
+	
+	var health_ratio = current_health / max_health
+	
+	if health_ratio < 0.3:
+		var intensity = (0.3 - health_ratio) / 0.3
+		set_vignette(0.5 + (0.3 * intensity), 0.8 * intensity, Color(0.5, 0.0, 0.0, 1.0))
+		set_film_grain(0.1 + (0.1 * intensity), 1.5, 2.0)
+		set_chromatic_aberration(0.3 * intensity, intensity > 0.2)
 		
-		set_vignette(intensity, opacity, color)
-		
-		if health_ratio < 0.3:
-			set_chromatic_aberration(lerp(0.5, 2.0, 1.0 - health_ratio / 0.3))
-			set_film_grain(lerp(0.1, 0.3, 1.0 - health_ratio / 0.3), grain_size, grain_speed)
-			set_dithering(true, lerp(0.0, 0.15, 1.0 - health_ratio / 0.3), 1.0)
+		if intensity > 0.7:
+			create_pulse_effect(1.2 + (intensity * 0.5), intensity * 0.8)
 	else:
-		set_vignette(0.4, 0.5, Color(0.0, 0.0, 0.0, 1.0))
-		set_chromatic_aberration(0.5)
-		set_film_grain(0.1, 1.0, 1.0)
-		set_dithering(false)
+		set_vignette(vignette_intensity, vignette_opacity, vignette_color)
+		set_chromatic_aberration(aberration_amount, aberration_enabled)
 
-func _on_environment_changed(environment: String):
-	match environment:
+func _on_environment_changed(environment_type: String):
+	if not is_initialized:
+		return
+	
+	match environment_type:
+		"desert", "weather_dust_storm":
+			apply_desert_palette()
+			set_heat_distortion(0.2, 0.2, Vector2(0.5, 0.2), 1.0)
+			
 		"lab":
 			apply_lab_palette()
-			set_bloom(true, 0.2, 0.6)
-			set_vignette(0.5, 0.6, Color(0.0, 0.1, 0.2, 1.0))
-		"desert":
-			apply_desert_palette()
-			set_bloom(false)
-			set_heat_distortion(0.02, 0.2, Vector2(0.5, 0.5), 2.0)
-			set_vignette(0.5, 0.4, Color(0.3, 0.2, 0.1, 1.0))
+			set_heat_distortion(0.0, 0.0, Vector2(0.5, 0.5), 0.5)
+			
 		"home":
 			apply_home_palette()
-			set_bloom(false)
-			set_vignette(0.4, 0.5, Color(0.1, 0.05, 0.0, 1.0))
-		"night":
-			set_palette_shifting(true, 
-				Color(0.2, 0.15, 0.05, 1.0),
-				Color(0.6, 0.5, 0.3, 1.0),
-				Color(0.9, 0.7, 0.5, 1.0),
-				0.5
-			)
-			set_bloom(true, 0.3, 0.5)
-			set_vignette(0.6, 0.7, Color(0.0, 0.0, 0.1, 1.0))
-
-func _on_apply_immediate_effect(effect_name: String, duration: float = 0.5):
-	match effect_name:
-		"pulse":
-			create_pulse_effect(duration, 0.8)
-		"flash":
-			var tween = create_tween()
-			set_vignette(0.0, 0.0, Color(1.0, 1.0, 1.0, 1.0))
-			tween.tween_property(self, "vignette_intensity", 0.4, duration)
-			tween.parallel().tween_property(self, "vignette_opacity", 0.5, duration)
-			tween.parallel().tween_property(self, "vignette_color", Color(0.0, 0.0, 0.0, 1.0), duration)
-			tween.tween_callback(Callable(self, "update_shader_parameters"))
-		"glitch":
-			var original_aberration = aberration_amount
-			set_chromatic_aberration(2.0)
+			set_heat_distortion(0.0, 0.0, Vector2(0.5, 0.5), 0.5)
 			
-			var tween = create_tween()
-			tween.tween_property(self, "aberration_amount", original_aberration, duration)
-			tween.tween_callback(Callable(self, "update_shader_parameters"))
+		"hallucination":
+			set_palette_shifting(true, 
+				Color(0.1, 0.0, 0.2, 1.0),
+				Color(0.5, 0.1, 0.6, 1.0),
+				Color(0.9, 0.5, 1.0, 1.0),
+				0.7
+			)
+			set_chromatic_aberration(0.8, true)
+			set_heat_distortion(0.4, 0.4, Vector2(0.5, 0.5), 1.0)
+			
+		"fire", "explosion":
+			set_heat_distortion(0.5, 0.8, Vector2(0.5, 0.5), 1.0)
+			create_pulse_effect(0.3, 0.9)
+			
+		_:
+			set_palette_shifting(false, Color.BLACK, Color.GRAY, Color.WHITE, 0.0)
+			set_heat_distortion(0.0, 0.0, Vector2(0.5, 0.5), 0.5)
 
-func set_enabled(is_enabled: bool):
-	enabled = is_enabled
+func _on_apply_immediate_effect(effect_name: String, params: Dictionary):
+	if not is_initialized:
+		return
 	
-	if post_process_rect:
-		post_process_rect.visible = enabled 
+	match effect_name:
+		"flash":
+			if params.has("color") and params.has("duration"):
+				flash_screen(params.color, params.duration)
+		
+		"pulse":
+			var intensity = 1.0
+			var duration = 0.5
+			
+			if params.has("intensity"):
+				intensity = params.intensity
+			if params.has("duration"):
+				duration = params.duration
+				
+			create_pulse_effect(duration, intensity)
+			
+		"shake":
+			var intensity = 1.0
+			var duration = 0.3
+			
+			if params.has("intensity"):
+				intensity = params.intensity
+			if params.has("duration"):
+				duration = params.duration
+				
+			create_shake_effect(duration, intensity)
+			
+		"heat_wave":
+			var amount = 0.5
+			var speed = 0.8
+			var center = Vector2(0.5, 0.5)
+			var radius = 1.0
+			var duration = 2.0
+			
+			if params.has("amount"):
+				amount = params.amount
+			if params.has("speed"):
+				speed = params.speed
+			if params.has("center"):
+				center = params.center
+			if params.has("radius"):
+				radius = params.radius
+			if params.has("duration"):
+				duration = params.duration
+				
+			set_heat_distortion(amount, speed, center, radius)
+			
+			if duration > 0.0:
+				var tween = create_tween()
+				tween.tween_method(func(v): set_heat_distortion(v, speed, center, radius), 
+					amount, 0.0, duration)
+
+func flash_screen(color: Color, duration: float = 0.5):
+	if not is_initialized or not post_process_material:
+		return
+	
+	post_process_material.set_shader_parameter("overlay_color", color)
+	post_process_material.set_shader_parameter("blend_mode", 0)
+	
+	var tween = create_tween()
+	tween.tween_method(func(v): post_process_material.set_shader_parameter("overlay_color", v), 
+		color, Color(0, 0, 0, 0), duration)
+
+func set_quality_level(level: int):
+	if not is_initialized:
+		return
+		
+	match level:
+		0:  
+			grain_enabled = false
+			bloom_enabled = false
+			aberration_enabled = false
+			palette_shift_enabled = false
+			dithering_enabled = false
+			
+		1:  
+			grain_enabled = true
+			bloom_enabled = true
+			aberration_enabled = false
+			palette_shift_enabled = true
+			dithering_enabled = false
+			
+		2:  
+			grain_enabled = true
+			bloom_enabled = true
+			aberration_enabled = true
+			palette_shift_enabled = true
+			dithering_enabled = true
+	
+	update_shader_parameters()
+
+func _on_screen_capture_requested():
+	if is_initialized and post_process_material:
+		var original_enabled = enabled
+		enabled = false
+		update_shader_parameters()
+		
+		await get_tree().process_frame
+		await get_tree().process_frame
+		
+		enabled = original_enabled
+		update_shader_parameters() 

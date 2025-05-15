@@ -6,6 +6,6 @@
 script = ExtResource("1_5pk0s")
 id = 0
 quest_name = "GetToCar"
-quest_description = ""
-quest_objective = "Get To Car"
+quest_description = "Get to the car."
+quest_objective = "Get to the car."
 metadata/_custom_type_script = "uid://d20o527a4y4ee"

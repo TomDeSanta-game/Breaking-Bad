@@ -420,7 +420,11 @@ func update_shader_parameters(params: Dictionary):
 	var shader_material = color_rect.material as ShaderMaterial
 	
 	for param in params:
-		var value = snappedf(params[param], 0.01) if typeof(params[param]) == TYPE_FLOAT else params[param]
+		var value
+		if typeof(params[param]) == TYPE_FLOAT:
+			value = snappedf(params[param], 0.01)
+		else:
+			value = params[param]
 		
 		if shader_material.has_shader_parameter(param):
 			shader_material.set_shader_parameter(param, value)
@@ -451,9 +455,15 @@ func enable_effect(effect_name: String, intensity: float = 1.0, duration: float 
 	if !is_initialized:
 		return
 		
+	var time_remaining: float
+	if duration > 0.0:
+		time_remaining = duration
+	else:
+		time_remaining = -1.0
+		
 	active_effects[effect_name] = {
 		"intensity": intensity,
-		"time_remaining": duration if duration > 0.0 else -1.0
+		"time_remaining": time_remaining
 	}
 	
 	match effect_name:
