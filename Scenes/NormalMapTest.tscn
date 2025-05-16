@@ -1,0 +1,69 @@
+[gd_scene load_steps=5 format=3 uid="uid://dt28g15k64yl6"]
+
+[ext_resource type="PackedScene" uid="uid://dextyluhrr7ge" path="res://Scenes/player.tscn" id="1_pcj1u"]
+[ext_resource type="Texture2D" path="res://assets/Lights/light_texture.png" id="2_light"]
+[ext_resource type="Script" path="res://Scripts/light_mover.gd" id="3_2yb0d"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_k5mtu"]
+radius = 128.0
+
+[node name="NormalMapTest" type="Node2D"]
+
+[node name="Background" type="ColorRect" parent="."]
+z_index = -10
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.117647, 0.117647, 0.156863, 1)
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.2, 0.15, 0.25, 1)
+
+[node name="Player" parent="." instance=ExtResource("1_pcj1u")]
+position = Vector2(576, 324)
+
+[node name="MainLight" type="PointLight2D" parent="." groups=["dynamic_lights"]]
+position = Vector2(700, 250)
+color = Color(1, 0.9, 0.8, 1)
+energy = 1.5
+shadow_enabled = true
+shadow_filter = 1
+shadow_filter_smooth = 2.0
+texture = ExtResource("2_light")
+texture_scale = 5.0
+
+[node name="SecondLight" type="PointLight2D" parent="." groups=["dynamic_lights"]]
+position = Vector2(450, 400)
+color = Color(0.388235, 0.831373, 0.937255, 1)
+energy = 1.2
+shadow_enabled = true
+shadow_filter = 1
+shadow_filter_smooth = 1.0
+texture = ExtResource("2_light")
+texture_scale = 3.0
+
+[node name="MovableLight" type="PointLight2D" parent="." groups=["dynamic_lights"]]
+position = Vector2(575, 200)
+color = Color(0.882353, 0.647059, 0.901961, 1)
+energy = 1.2
+shadow_enabled = true
+shadow_filter = 1
+texture = ExtResource("2_light")
+texture_scale = 4.0
+script = ExtResource("3_2yb0d")
+
+[node name="FillLight" type="PointLight2D" parent="." groups=["dynamic_lights"]]
+position = Vector2(300, 300)
+color = Color(0.517647, 0.929412, 0.705882, 1)
+energy = 0.8
+shadow_enabled = true
+shadow_filter = 1
+texture = ExtResource("2_light")
+texture_scale = 2.0
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(576, 324)
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_k5mtu")] 

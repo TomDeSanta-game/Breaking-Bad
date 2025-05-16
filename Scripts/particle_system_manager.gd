@@ -84,9 +84,6 @@ func spawn_explosion(position: Vector2, large: bool = false, scale_factor: float
 	var effect_type = EffectType.EXPLOSION_LARGE if large else EffectType.EXPLOSION_SMALL
 	var effect = spawn_effect(effect_type, position, 0.0, scale_factor)
 	
-	if CameraEffects and effect:
-		CameraEffects.add_impact_at_position(position, 0.8 if large else 0.4)
-	
 	if signal_bus:
 		var damage_radius = 100.0 if large else 50.0
 		signal_bus.explosion_occurred.emit(position, scale_factor, damage_radius)
@@ -135,9 +132,6 @@ func spawn_chemical_reaction(position: Vector2, color: String = "blue", scale_fa
 func spawn_muzzle_flash(position: Vector2, rotation: float, scale_factor: float = 1.0):
 	var effect = spawn_effect(EffectType.MUZZLE_FLASH, position, rotation, scale_factor)
 	
-	if CameraEffects:
-		CameraEffects.add_trauma(0.2)
-		
 	if signal_bus:
 		var direction = Vector2.RIGHT.rotated(rotation)
 		signal_bus.gunshot_fired.emit(position, direction, "pistol")
@@ -150,9 +144,6 @@ func spawn_blood_splatter(position: Vector2, direction: Vector2 = Vector2.ZERO, 
 		rotation = direction.angle()
 	
 	var effect = spawn_effect(EffectType.BLOOD_SPLATTER, position, rotation, scale_factor)
-	
-	if CameraEffects:
-		CameraEffects.add_trauma(0.15)
 	
 	return effect
 

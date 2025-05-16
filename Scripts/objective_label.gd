@@ -1,7 +1,7 @@
 extends Control
 
 @onready var objective_panel = $ObjectivePanel
-@onready var quest_text = $ObjectivePanel/MarginContainer/VBoxContainer/QuestText
+@onready var quest_text = $ObjectivePanel/QuestText
 @onready var completion_panel = $ObjectivePanel/CompletionPanel
 
 var current_quest = ""
@@ -10,12 +10,22 @@ var panel_default_position
 var panel_tween
 
 func _ready():
+	# Set default position
 	panel_default_position = objective_panel.position
+	
+	# Make sure panel is visible and fully opaque
+	objective_panel.modulate.a = 1.0
+	objective_panel.visible = true
+	
+	# Connect signals
 	SignalBus.connect("objective_added", start_quest)
 	SignalBus.connect("objective_completed", complete_quest)
 	
-	objective_panel.modulate.a = 0
-	objective_panel.visible = false
+	# Show default objective text
+	quest_text.text = "Find a way to make money"
+	current_quest = "initial"
+	
+	Log.info("ObjectiveLabel initialized with default text")
 
 func start_quest(quest_id: String, text: String) -> void:
 	if is_animating:
@@ -28,7 +38,7 @@ func start_quest(quest_id: String, text: String) -> void:
 	objective_panel.visible = true
 	completion_panel.visible = false
 	
-	objective_panel.position.x = panel_default_position.x + 30
+	objective_panel.position.x = panel_default_position.x - 30
 	panel_tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	panel_tween.tween_property(objective_panel, "modulate:a", 0, 0)
 	panel_tween.tween_property(objective_panel, "modulate:a", 1.0, 0.4)
@@ -84,7 +94,7 @@ func complete_quest(quest_id: String) -> void:
 	await success_flash.finished
 	
 	panel_tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_BACK)
-	panel_tween.tween_property(objective_panel, "position:x", panel_default_position.x + 30, 0.4)
+	panel_tween.tween_property(objective_panel, "position:x", panel_default_position.x - 30, 0.4)
 	panel_tween.parallel().tween_property(objective_panel, "modulate:a", 0, 0.4)
 	
 	await panel_tween.finished
@@ -109,7 +119,7 @@ func show_objective_panel(visible_state: bool) -> void:
 		panel_tween.parallel().tween_property(objective_panel, "position:x", panel_default_position.x, 0.4)
 	else:
 		panel_tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_BACK)
-		panel_tween.tween_property(objective_panel, "position:x", panel_default_position.x + 30, 0.3)
+		panel_tween.tween_property(objective_panel, "position:x", panel_default_position.x - 30, 0.3)
 		panel_tween.parallel().tween_property(objective_panel, "modulate:a", 0, 0.3)
 		await panel_tween.finished
 		objective_panel.visible = false 

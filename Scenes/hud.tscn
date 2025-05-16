@@ -10,7 +10,7 @@ border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.8, 0.8, 0.8, 0.196078)
+border_color = Color(1.0, 1.0, 1.0, 0.4)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
@@ -35,7 +35,8 @@ expand_margin_bottom = 2.0
 anti_aliasing = false
 
 [sub_resource type="LabelSettings" id="LabelSettings_pye3h"]
-font_size = 12
+font_size = 14
+font_color = Color(1, 0.8, 0.2, 1)
 shadow_size = 0
 shadow_color = Color(0, 0, 0, 0.392157)
 
@@ -44,12 +45,17 @@ shadow_color = Color(0, 0, 0, 0.392157)
 [node name="ObjectiveLabel" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
 script = ExtResource("3_1c3gd")
 
 [node name="ObjectivePanel" type="PanelContainer" parent="ObjectiveLabel"]
+custom_minimum_size = Vector2(320, 80)
 layout_mode = 0
-offset_right = 220.0
-offset_bottom = 50.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 340.0
+offset_bottom = 100.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_fpkrg")
 
 [node name="CompletionPanel" type="PanelContainer" parent="ObjectiveLabel/ObjectivePanel"]
@@ -57,35 +63,28 @@ visible = false
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_8tpdk")
 
-[node name="MarginContainer" type="MarginContainer" parent="ObjectiveLabel/ObjectivePanel"]
+[node name="HeaderLabel" type="Label" parent="ObjectiveLabel/ObjectivePanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 5
-
-[node name="VBoxContainer" type="VBoxContainer" parent="ObjectiveLabel/ObjectivePanel/MarginContainer"]
-layout_mode = 2
-
-[node name="HeaderLabel" type="Label" parent="ObjectiveLabel/ObjectivePanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
+size_flags_vertical = 0
 text = "OBJECTIVE"
 label_settings = SubResource("LabelSettings_pye3h")
 horizontal_alignment = 1
 
-[node name="QuestText" type="Label" parent="ObjectiveLabel/ObjectivePanel/MarginContainer/VBoxContainer"]
+[node name="QuestText" type="Label" parent="ObjectiveLabel/ObjectivePanel"]
 layout_mode = 2
+size_flags_vertical = 8
 text = "Find a way to make money"
+horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="StaminaBar" parent="." instance=ExtResource("1_a3vut")]
 offset_left = 20.0
-offset_top = 100.0
+offset_top = 110.0
 offset_right = 220.0
-offset_bottom = 125.0
+offset_bottom = 135.0
 
 [node name="HeatBar" parent="." instance=ExtResource("2_nw5cl")]
 offset_left = 20.0
-offset_top = 130.0
+offset_top = 140.0
 offset_right = 220.0
-offset_bottom = 155.0
+offset_bottom = 165.0

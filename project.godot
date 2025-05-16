@@ -20,7 +20,6 @@ config/icon="res://icon.svg"
 
 SignalBus="*res://Scripts/signal_bus.gd"
 TensionManager="*res://Scripts/tension_manager.gd"
-CameraEffects="*res://Scripts/camera_effects_autoload.gd"
 VisualAtmosphere="*res://Scripts/visual_atmosphere_manager.gd"
 ParticleSystemManager="*res://Scripts/particle_system_manager.gd"
 Log="*res://addons/logger/logger.gd"
@@ -36,6 +35,8 @@ InputInitializer="*res://Scripts/input_initializer.gd"
 TimeEffectsManager="*res://Scenes/TimeEffectsManager.tscn"
 WhiteScreenFix="*res://Scripts/bypass_white_screen.gd"
 GameState="*res://Scripts/game_state.gd"
+NormalMappingManager="*res://Scripts/normal_mapping_manager.gd"
+LightTextureGenerator="*res://Scripts/light_texture_generator.gd"
 
 [dialogic]
 

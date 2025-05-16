@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-@export var speed: float = 160.0
+@export var speed: float = 130.0
 @export var acceleration: float = 2000.0
 @export var friction: float = 2000.0
 @export var sprint_multiplier: float = 1.5
@@ -13,8 +13,6 @@ extends CharacterBody2D
 @export var heat_decay_rate: float = 0.5
 @export var interaction_distance: float = 50.0
 @export_flags_2d_physics var interaction_mask: int = 0
-@export var shadow_offset: Vector2 = Vector2(0, 8)
-@export var shadow_alpha: float = 0.5
 @export var use_player_camera: bool = false
 @export var camera_offset: Vector2 = Vector2.ZERO
 
@@ -63,18 +61,20 @@ var current_state: PlayerState = PlayerState.IDLE
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var interaction_ray: RayCast2D = $InteractionRay
 @onready var hud: CanvasLayer = $HUD
-@onready var heat_bar: ProgressBar = $HUD/MarginContainer/VBoxContainer/HeatBar
-@onready var shadow_sprite: Sprite2D = null
+@onready var heat_bar: ProgressBar = $HUD/HeatBar
 @onready var camera: Camera2D = null
 
 func _ready() -> void:
+	Log.info("Player ready")
+	
 	hud.show()
 	current_health = starting_health
+	
+	setup_normal_mapping()
 	
 	setup_damage_timer()
 	setup_dash_timers()
 	setup_interaction_ray()
-	setup_shadow()
 	
 	if use_player_camera and not has_node("Camera2D"):
 		setup_camera()
@@ -82,6 +82,8 @@ func _ready() -> void:
 	SignalBus.health_changed.emit(current_health, starting_health)
 	SignalBus.heat_changed.emit(heat_level, max_heat_level)
 	set_state(PlayerState.IDLE)
+	
+	emit_signal("player_position_changed", global_position)
 
 func setup_damage_timer() -> void:
 	damage_timer = Timer.new()
@@ -109,17 +111,7 @@ func setup_interaction_ray() -> void:
 		interaction_ray.target_position = Vector2(interaction_distance, 0)
 
 func setup_shadow() -> void:
-	var shadow_texture = load("res://assets/Extra/Shadow.png")
-	if shadow_texture:
-		shadow_sprite = Sprite2D.new()
-		shadow_sprite.name = "Shadow"
-		shadow_sprite.texture = shadow_texture
-		shadow_sprite.modulate = Color(0, 0, 0, shadow_alpha)
-		shadow_sprite.z_index = -1
-		add_child(shadow_sprite)
-		shadow_sprite.position = shadow_offset
-	else:
-		Log.warn("Shadow texture not found. Player shadow disabled.")
+	pass
 
 func setup_camera() -> void:
 	camera = Camera2D.new()
@@ -139,7 +131,6 @@ func _physics_process(delta: float) -> void:
 	handle_movement(delta)
 	update_interaction_ray()
 	handle_animation()
-	update_shadow()
 	
 	if camera and use_player_camera:
 		update_camera(delta)
@@ -208,11 +199,6 @@ func start_dash() -> void:
 	dash_timer.start()
 	dash_cooldown_timer.start()
 	
-	if shadow_sprite:
-		var tween = create_tween()
-		tween.tween_property(shadow_sprite, "scale", Vector2(1.5, 0.7), dash_duration * 0.5)
-		tween.tween_property(shadow_sprite, "scale", Vector2(1.0, 1.0), dash_duration * 0.5)
-		
 	if camera:
 		camera.offset += dash_direction * 20.0
 
@@ -261,11 +247,7 @@ func handle_animation() -> void:
 	sprite.play(animation_prefix + state_suffix)
 
 func update_shadow() -> void:
-	if shadow_sprite:
-		if not is_dashing:
-			var movement_factor = min(1.0, velocity.length() / 50.0)
-			shadow_sprite.scale = Vector2(1.0, 1.0) * (1.0 + movement_factor * 0.2)
-			shadow_sprite.modulate.a = shadow_alpha * (1.0 - movement_factor * 0.3)
+	pass
 
 func update_camera(delta: float) -> void:
 	if camera:
@@ -588,3 +570,10 @@ func hide_ui(should_hide: bool = true):
 	
 	if canvas_layer:
 		canvas_layer.visible = !should_hide
+
+func setup_normal_mapping() -> void:
+	var normal_texture = load("res://assets/Prototype_Character/Prototype_Character_n.png")
+	if normal_texture:
+		var normal_manager = get_node("/root/NormalMappingManager")
+		if normal_manager:
+			normal_manager.setup_animated_sprite_normal_map($AnimatedSprite2D, normal_texture)

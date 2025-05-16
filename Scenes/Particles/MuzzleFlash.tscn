@@ -140,7 +140,7 @@ position = Vector2(10, 0)
 scale = Vector2(1e-05, 1e-05)
 texture = ExtResource("1_1hhc4")
 
-[node name="MuzzleLight" type="PointLight2D" parent="."]
+[node name="MuzzleLight" type="PointLight2D" parent="." groups=["dynamic_lights"]]
 position = Vector2(10, 0)
 color = Color(1, 0.835294, 0.541176, 1)
 energy = 0.0
